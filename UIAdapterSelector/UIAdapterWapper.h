@@ -16,10 +16,9 @@ public:
 		object = obj;
 		displayFunction = displayfunc;
 	}
-	virtual int Display(SCMap &map, SCCollection &competitors)
+	virtual int Display(const UIDisplayData* data)
 	{
-		array<Object^> ^args = gcnew array < Object^ > { IntPtr(&map), IntPtr(&competitors) };
-		Object ^ret = displayFunction->Invoke(object, args);
-		return Convert::ToInt32(ret);
+		auto arg = gcnew array < Object^ > { IntPtr(const_cast<UIDisplayData*>(data)) };
+		return Convert::ToInt32(displayFunction->Invoke(object, arg));
 	}
 };

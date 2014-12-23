@@ -12,22 +12,26 @@ public:
 	CImplWapper(wstring &file)
 	{
 		hDLL = LoadLibrary(file.c_str());
-		if (hDLL != INVALID_HANDLE_VALUE)
+		if (hDLL)
 		{
 			pNewAdapter newAIAdapter = (pNewAdapter)GetProcAddress(hDLL, "CreateAIAdapter");
-			if (newAIAdapter != 0)
+			if (newAIAdapter)
 				pAI = newAIAdapter();
+		}
+		else
+		{
+			DWORD e = GetLastError();
 		}
 	}
 	~CImplWapper()
 	{
 		if (pAI)
 			delete pAI;
-		if (hDLL != INVALID_HANDLE_VALUE)
+		if (hDLL)
 			FreeLibrary(hDLL);
 	}
-	virtual SCCompetitorAction Think(SCCompetitor *competitor, SCCompetitorVision vision)
+	virtual SCHeroAction Think(const AIThinkData *data)
 	{
-		return pAI->Think(competitor, vision);
+		return pAI ? pAI->Think(data) : NoAction;
 	}
 };

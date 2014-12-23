@@ -8,30 +8,41 @@ namespace CSharpUI2DImpl
 {
     public class UIAdapter
     {
+        object stateLock = new object();
         int survivorState = 1;
         SurvivorForm mainForm;
         Thread formThread;
+
         public UIAdapter()
         {
             mainForm = new SurvivorForm();
-            mainForm.FormClosing += (object s, FormClosingEventArgs e) => { survivorState = 0; };
-            formThread = new Thread(() =>
-            {
-                Application.Run(mainForm);
-            });
+            mainForm.FormClosing += mainForm_FormClosing;
+            formThread = new Thread(() => { Application.Run(mainForm); });
+            formThread.Name = "Survivor C# 2D Impl";
             formThread.Start();
+        }
+
+        void mainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            lock (stateLock) survivorState = 0;
         }
 
         ~UIAdapter()
         {
-            Application.Exit();
+            if (formThread.ThreadState == ThreadState.Running)
+                Application.Exit();
+            formThread.Join();
         }
 
-        public int Display(IntPtr pmap, IntPtr pcompetitors)
+        public int Display(IntPtr pdata)
         {
-            SCCollection competitors = new SCCollection(pcompetitors);
-            mainForm.Validate();
-            return survivorState;
+            lock (stateLock)
+            {
+                if (survivorState != 1)
+                    return survivorState;
+                mainForm.SetDisplayData(new UIDisplayData(pdata));
+                return 1;
+            }
         }
     }
 }

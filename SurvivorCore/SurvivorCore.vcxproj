@@ -183,10 +183,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AIAdapter.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SCGame.h" />
-    <ClInclude Include="UIAdapter.h" />
+    <ClInclude Include="ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SCGame.cpp" />

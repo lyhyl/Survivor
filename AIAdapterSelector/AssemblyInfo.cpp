@@ -14,9 +14,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute(L"AIAdapterSelector")];
 [assembly:AssemblyDescriptionAttribute(L"")];
 [assembly:AssemblyConfigurationAttribute(L"")];
-[assembly:AssemblyCompanyAttribute(L"")];
+[assembly:AssemblyCompanyAttribute(L"LoengJanhou")];
 [assembly:AssemblyProductAttribute(L"AIAdapterSelector")];
-[assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2014")];
+[assembly:AssemblyCopyrightAttribute(L"Copyright (c) LoengJanhou 2014")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];
 

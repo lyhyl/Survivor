@@ -18,10 +18,10 @@
     <ClCompile Include="SCCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SCCompetitor.cpp">
+    <ClCompile Include="SCMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SCMap.cpp">
+    <ClCompile Include="SCDefines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,9 +32,6 @@
     <ClInclude Include="SCCollection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SCCompetitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SCDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,6 +39,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SCStructure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAdapter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIAdapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

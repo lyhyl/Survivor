@@ -21,10 +21,7 @@
     <ClInclude Include="SCGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIAdapter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UIAdapter.h">
+    <ClInclude Include="ThreadPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

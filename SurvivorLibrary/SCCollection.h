@@ -32,3 +32,38 @@ public:
 	scsize Find(in_t e)const;
 };
 
+template<typename T>
+class SCCollectionX
+{
+private:
+	SCCollection collection;
+public:
+	operator SCCollection() { return collection; }
+	SCCollectionX() = default;
+	~SCCollectionX() = default;
+	T *operator[](scsize i) const { return collection[i]; }
+	scsize Add(T e) { return collection.Add((in_t)e); }
+	bool Remove(T e) { return collection.Remove((in_t)e); }
+	bool Remove(scsize i) { return collection.Remove(i); }
+	scsize Size() const { return collection.Size(); }
+	void Clear() { collection.Clear(); }
+	scsize Find(T e) const { return collection.Find((in_t)e); }
+};
+
+template<typename T>
+class SCCollectionX<T*>
+{
+private:
+	SCCollection collection;
+public:
+	operator SCCollection() { return collection; }
+	SCCollectionX() = default;
+	~SCCollectionX() = default;
+	T *operator[](scsize i) const { return (T*)collection[i]->ptr; }
+	scsize Add(T *e) { return collection.Add({ e }); }
+	bool Remove(T *e) { return collection.Remove({ e }); }
+	bool Remove(scsize i){ return collection.Remove(i); }
+	scsize Size() const { return collection.Size(); }
+	void Clear() { collection.Clear(); }
+	scsize Find(T *e) const	{ return collection.Find({ e }); }
+};

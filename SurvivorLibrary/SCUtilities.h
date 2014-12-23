@@ -5,36 +5,38 @@ using namespace std;
 
 struct API SCPoint
 {
-	scint x, y;
+	scfloat x, y;
 };
+
+typedef SCPoint SCVector2;
 
 struct API SCTriangle
 {
 	SCPoint a, b, c;
 };
 
-struct API Region
+struct API SCRegion
 {
 public:
-	Region()
+	SCRegion()
 	{
 		vertexCount = 0;
 		verties = nullptr;
 	}
-	Region(initializer_list<SCPoint> vs)
+	SCRegion(initializer_list<SCPoint> vs)
 	{
 		vertexCount = vs.size();
 		verties = new SCPoint[(size_t)vertexCount];
 		memcpy_s(verties, (rsize_t)vertexCount, vs.begin(), (rsize_t)vertexCount);
 	}
-	Region(SCPoint *vs, scsize size)
+	SCRegion(SCPoint *vs, scsize size)
 	{
 		vertexCount = size;
 		rsize_t memsiz = (rsize_t)vertexCount * sizeof(SCPoint);
 		memcpy_s(verties, memsiz, vs, memsiz);
 		verties = vs;
 	}
-	~Region()
+	~SCRegion()
 	{
 		delete[] verties;
 	}

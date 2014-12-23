@@ -9,7 +9,7 @@ static bool JavaInitialized = false;
 static unsigned __int64 jvmRef = 0;
 static JavaVM *jvm = nullptr;
 static JNIEnv *env = nullptr;
-static JavaVMOption options[3];
+static JavaVMOption options[1] = { 0 };
 
 void InitJavaVM()
 {
@@ -23,7 +23,7 @@ void InitJavaVM()
 	HINSTANCE jvmDLL = LoadLibrary(jpath);
 	if (jvmDLL == NULL)
 	{
-		MessageBox(0, __TEXT("Unable to init java vm"), __TEXT("Error"), 0);
+		MessageBox(0, __TEXT("Unable to initialize Java VM"), __TEXT("Error"), 0);
 		exit(1);
 	}
 	pCreateJavaVM CreateJavaVM = (pCreateJavaVM)GetProcAddress(jvmDLL, "JNI_CreateJavaVM");
@@ -35,7 +35,7 @@ void InitJavaVM()
 		*pFileName = 0;
 		pFileName--;
 	}
-	strcat_s(JavaVMOptionBuffer, "Heroes\\");
+	strcat_s(JavaVMOptionBuffer, GetHeroesDirA());
 
 	options[0].optionString = JavaVMOptionBuffer;
 	JavaVMInitArgs vm_args;
@@ -83,11 +83,12 @@ public:
 			jvm = nullptr;
 		}
 	}
-	virtual SCCompetitorAction Think(SCCompetitor *competitor, SCCompetitorVision vision)
+	virtual SCHeroAction Think(const AIThinkData *data)
 	{
 		JNIEnv *threadEnv = nullptr;
 		jvm->AttachCurrentThread((void**)&threadEnv, options);
 		jint r = threadEnv->CallIntMethod(jAdapter, jThinkMethodID);
-		return{ 0 };
+		jvm->DetachCurrentThread();
+		return NoAction;
 	}
 };

@@ -1,64 +1,161 @@
-#include <hash_map>
-#include <future>
 #include <chrono>
+#include <future>
 #include "SCGame.h"
 
 using namespace std;
 using namespace std::chrono;
 
-SCGame::SCGame(AIAdapter *ais[])
+typedef UIAdapter*(__cdecl *GetUIAdapterFunc)(const wchar_t*);
+typedef AIAdapter*(__cdecl *GetAIAdapterFunc)(const wchar_t*);
+
+wstring GetExePath()
 {
-	AIAdapter **ppAI = ais;
-	while (*ppAI) Competitors.Add({ *ppAI++ });
+	TCHAR buffer[MAX_PATH];
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	wstring path(buffer);
+	wstring::size_type pos = path.find_last_of(__TEXT("\\/"));
+	return path.substr(0, pos);
+}
+
+void HeroThinkThread(SCGame *game, AIAdapter *ai, SCHero *hero)
+{
+	// Think
+	AIThinkData data = { hero, 0 };
+	game->GetThinkData(&data);
+	future<SCHeroAction> result = async([=]{ return ai->Think(&data); });
+	SCHeroAction action = result.wait_for(milliseconds(ThinkTimeLimit)) == future_status::ready ? result.get() : NoAction;
+
+	// Write
+	game->writeMtx.lock();
+	game->actionLog[hero] = action;
+	game->actionThinkedCount++;
+	game->writeMtx.unlock();
+
+	game->doneCV.notify_one();
+}
+
+SCGame::SCGame()
+{
+	threadPool = new ThreadPool(256);
 }
 
 SCGame::SCGame(istream &in) :Map(in)
 {
+	throw exception("Not Impl");
 }
 
 SCGame::~SCGame()
 {
+	delete threadPool;
+
+	scsize count = Competitors.Size();
+	while (count--)
+		delete Competitors[count];
+	delete uiAdapter;
+	FreeLibrary(uiSelectorDll);
+	FreeLibrary(aiSelectorDll);
 }
 
-void SCGame::ApplyAction(AIAdapter *const com, SCCompetitorAction act) const
+void SCGame::BeginGame(const wchar_t *UIOption)
 {
-	// TODO
-}
+	wstring currentWPath = GetExePath();
 
-SCCompetitorAction SCGame::TimeLimitThink(AIAdapter *const com, SCCompetitorVision vis) const
-{
-	future<SCCompetitorAction> result = async( [com, vis]{ return com->Think(0, vis); });
-	switch (result.wait_for(milliseconds(500)))
+	if (UIOption == nullptr)
+		UIOption = __TEXT("C#2D");
+
+	uiSelectorDll = LoadLibrary(__TEXT(".\\UIAdapterSelector.dll"));
+	GetUIAdapterFunc getUIAdapter = (GetUIAdapterFunc)GetProcAddress(uiSelectorDll, "CreateUIAdapter");
+	uiAdapter = getUIAdapter(UIOption);
+
+	aiSelectorDll = LoadLibrary(__TEXT(".\\AIAdapterSelector.dll"));
+	GetAIAdapterFunc getAIAdapter = (GetAIAdapterFunc)GetProcAddress(aiSelectorDll, "CreateAIAdapter");
+	wstring aiFolder = currentWPath + __TEXT("\\") + GetHeroesDirW() + __TEXT("\\");
+
+	if (CreateDirectory(aiFolder.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
 	{
-	case future_status::ready:
-		return result.get();
-	default:
-		return{ 0 };
+		WIN32_FIND_DATA fd;
+		HANDLE hFind = FindFirstFile((aiFolder + __TEXT("*.*")).c_str(), &fd);
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			do
+				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+					Competitors.Add(new Competitor(this, getAIAdapter((aiFolder + fd.cFileName).c_str())));
+			while (FindNextFile(hFind, &fd));
+			FindClose(hFind);
+		}
 	}
-}
+	else
+	{
+		// Wait for AIs
+	}
 
-void SCGame::Run() const
-{
-	hash_map<AIAdapter*, SCCompetitorAction> actionLog;
 	scsize comc = Competitors.Size();
-	SCCompetitorVision v = { 0 };
 	for (scsize i = 0; i < comc; i++)
 	{
-		AIAdapter *com = (AIAdapter*)Competitors[i]->ptr;
-		actionLog[com] = TimeLimitThink(com, v);
+		Competitors[i]->CreateHero();
+		HeroCount++;
 	}
+}
+
+int SCGame::Present() const
+{
+	UIDisplayData data = GetDisplayData();
+	return uiAdapter->Display(&data);
+}
+
+void SCGame::GetThinkData(AIThinkData *data) const
+{
+	data->vision = 0;
+}
+
+UIDisplayData SCGame::GetDisplayData() const
+{
+	UIDisplayData data;
+	data.map = &Map;
+	data.competitors = (SCCollection*)&Competitors;
+	return data;
+}
+
+void SCGame::ApplyAction()
+{
 	for (auto p : actionLog)
-		ApplyAction(p.first, p.second);
+	{
+		// TODO
+	}
+	actionLog.clear();
 }
 
-SCMap &SCGame::GetMap()
+void SCGame::Run()
 {
-	return Map;
+	actionThinkedCount = 0;
+	scsize comc = Competitors.Size();
+	for (scsize i = 0; i < comc; i++)
+	{
+		Competitor *com = Competitors[i];
+		for (auto her : com->heroes)
+			threadPool->enqueue(HeroThinkThread, this, com->ai, her);
+	}
+
+	while (actionThinkedCount < HeroCount)
+		this_thread::sleep_for(milliseconds(1));
+
+	// 
+	ApplyAction();
+	actionLog.clear();
 }
 
-SCCollection &SCGame::GetCompetitors()
+bool SCGame::UIClosed() const
 {
-	return Competitors;
+	return false;
+}
+
+void SCGame::EndGame()
+{
+}
+
+void SCGame::GetStatistics() const
+{
+
 }
 
 void *SCGame::GetLog()

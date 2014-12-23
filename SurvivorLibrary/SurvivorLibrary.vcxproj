@@ -152,16 +152,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="SCCollection.cpp" />
-    <ClCompile Include="SCCompetitor.cpp" />
+    <ClCompile Include="SCDefines.cpp" />
     <ClCompile Include="SCMap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIAdapter.h" />
     <ClInclude Include="SCCollection.h" />
-    <ClInclude Include="SCCompetitor.h" />
     <ClInclude Include="SCDefines.h" />
     <ClInclude Include="SCMap.h" />
     <ClInclude Include="SCStructure.h" />
     <ClInclude Include="SCUtilities.h" />
+    <ClInclude Include="UIAdapter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
