@@ -5,6 +5,6 @@ Programming Game
 
 Thanks
 ========
-progschj/ThreadPool (github)
+progschj/ThreadPool (https://github.com/progschj/ThreadPool)
 
 CSCore
