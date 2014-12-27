@@ -15,26 +15,10 @@ int CALLBACK WinMain(
 {
 	game = new SCGame();
 	
-	int uistate;
 	game->BeginGame();
-	while ((uistate = game->Present()) == 1)
-	{
-		if (game->UIClosed())
-			break;
-		game->Run();
-	}
+	while (game->Run())
+		game->Present();
 	game->EndGame();
-
-	// UI exited
-	switch (uistate)
-	{
-	case 0:
-		// exit normally
-		break;
-	default:
-		//something happen...
-		break;
-	}
 
 	delete game;
 

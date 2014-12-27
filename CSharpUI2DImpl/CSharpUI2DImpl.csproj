@@ -78,7 +78,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Character.cs" />
     <Compile Include="CS2DResource.cs" />
+    <Compile Include="InfoForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="SplashScreenForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,7 +105,6 @@
     <Compile Include="Memory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SCCollection.cs" />
-    <Compile Include="SurvivorCoreInvoker.cs" />
     <Compile Include="SurvivorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -129,7 +132,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="SurvivorB.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SurvivorR.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)CS2DResources" "$(SolutionDir)$(PlatformName)\$(ConfigurationName)\CS2DResources" /E /Y /I</PostBuildEvent>

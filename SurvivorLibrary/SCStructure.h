@@ -1,8 +1,10 @@
 #pragma once
+#include <chrono>
 #include "SCUtilities.h"
 #include "SCMap.h"
 
 using namespace std;
+using namespace std::chrono;
 
 struct API SCHeroVision
 {
@@ -19,15 +21,6 @@ struct API SCHeroTouch
 
 };
 
-struct API SCHero
-{
-	scint id;
-	scint hp;
-	scint energy;
-	SCPoint position;
-	SCVector2 direction;
-};
-
 enum class API SCHeroActionType :int
 {
 	Stay,
@@ -38,14 +31,27 @@ enum class API SCHeroActionType :int
 	Climb
 };
 
+struct API SCHero
+{
+	scint id;
+	scint hp;
+	scint energy;
+	SCPoint position;
+	SCVector2 direction;
+	SCHeroActionType state;
+
+	class AIAdapter *ai;
+	void *aiThread;
+};
+
 struct API SCHeroAction
 {
 	SCHeroActionType type;
 	union
 	{
-		// Stay Move Run Attack Climb
+		// Stay Attack Climb
 		struct { scfloat r0, r1, r2, r3; };
-		// Turn
+		// Turn Move Run
 		struct { scfloat angle, r1, r2, r3; };
 	};
 };
@@ -54,8 +60,8 @@ const SCHeroAction API NoAction = { SCHeroActionType::Stay, 0 };
 
 struct API UIDisplayData
 {
-	const SCMap *map;
-	const SCCollection *competitors;
+	 const SCMap * map = nullptr;
+	 const SCCollection * heroes = nullptr;
 };
 
 struct API AIThinkData

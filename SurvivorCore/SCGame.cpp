@@ -5,9 +5,6 @@
 using namespace std;
 using namespace std::chrono;
 
-typedef UIAdapter*(__cdecl *GetUIAdapterFunc)(const wchar_t*);
-typedef AIAdapter*(__cdecl *GetAIAdapterFunc)(const wchar_t*);
-
 wstring GetExePath()
 {
 	TCHAR buffer[MAX_PATH];
@@ -17,59 +14,65 @@ wstring GetExePath()
 	return path.substr(0, pos);
 }
 
-void HeroThinkThread(SCGame *game, AIAdapter *ai, SCHero *hero)
+void HeroThinkThread(SCGame *game, SCHero *hero, double fairRatio)
 {
-	// Think
-	AIThinkData data = { hero, 0 };
-	game->GetThinkData(&data);
-	future<SCHeroAction> result = async([=]{ return ai->Think(&data); });
-	SCHeroAction action = result.wait_for(milliseconds(ThinkTimeLimit)) == future_status::ready ? result.get() : NoAction;
+	while (game->running)
+	{
+		AIThinkData data;
+		data.target = hero;
+		game->GetThinkData(&data);
+		auto begin = steady_clock::now();
+		SCHeroAction action = hero->ai->Think(&data);
+		auto end = steady_clock::now();
+		this_thread::sleep_for(milliseconds((long long)(fairRatio * (begin - end).count())));
+		game->writeMtx.lock();
+		game->actionLog[hero] = action;
+		game->writeMtx.unlock();
+	}
+}
 
-	// Write
-	game->writeMtx.lock();
-	game->actionLog[hero] = action;
-	game->actionThinkedCount++;
-	game->writeMtx.unlock();
+int Competitor::HeroID = 0;
 
-	game->doneCV.notify_one();
+Competitor::Competitor(SCGame *g, AIAdapter *a, double fr) :ai(a), game(g), fairRatio(fr){}
+
+SCHero* Competitor::CreateHero()
+{
+	SCHero *hero = new SCHero{ HeroID++, 100, 10, { 2560, 2560 }, { 1, 1 }, SCHeroActionType::Stay, ai };
+	hero->aiThread = new thread(HeroThinkThread, game, hero, fairRatio);
+	return hero;
 }
 
 SCGame::SCGame()
 {
-	threadPool = new ThreadPool(256);
-}
-
-SCGame::SCGame(istream &in) :Map(in)
-{
-	throw exception("Not Impl");
+	uiSelectorDll = LoadLibrary(__TEXT(".\\UIAdapterSelector.dll"));
+	getUIAdapter = (GetUIAdapterFunc)GetProcAddress(uiSelectorDll, "CreateUIAdapter");
+	aiSelectorDll = LoadLibrary(__TEXT(".\\AIAdapterSelector.dll"));
+	getAIAdapter = (GetAIAdapterFunc)GetProcAddress(aiSelectorDll, "CreateAIAdapter");
 }
 
 SCGame::~SCGame()
 {
-	delete threadPool;
-
-	scsize count = Competitors.Size();
-	while (count--)
-		delete Competitors[count];
 	delete uiAdapter;
 	FreeLibrary(uiSelectorDll);
 	FreeLibrary(aiSelectorDll);
 }
 
-void SCGame::BeginGame(const wchar_t *UIOption)
+void SCGame::BeginGame(istream &in)
 {
-	wstring currentWPath = GetExePath();
+	throw exception("Not Impl");
+}
 
-	if (UIOption == nullptr)
-		UIOption = __TEXT("C#2D");
+void SCGame::BeginGame()
+{
+	BeginGame(wstring(__TEXT("C#2D")));
+}
 
-	uiSelectorDll = LoadLibrary(__TEXT(".\\UIAdapterSelector.dll"));
-	GetUIAdapterFunc getUIAdapter = (GetUIAdapterFunc)GetProcAddress(uiSelectorDll, "CreateUIAdapter");
-	uiAdapter = getUIAdapter(UIOption);
+void SCGame::BeginGame(wstring &UIOption)
+{
+	uiOption = UIOption;
 
-	aiSelectorDll = LoadLibrary(__TEXT(".\\AIAdapterSelector.dll"));
-	GetAIAdapterFunc getAIAdapter = (GetAIAdapterFunc)GetProcAddress(aiSelectorDll, "CreateAIAdapter");
-	wstring aiFolder = currentWPath + __TEXT("\\") + GetHeroesDirW() + __TEXT("\\");
+	uiAdapter = getUIAdapter(uiOption.c_str());
+	wstring aiFolder = GetExePath() + __TEXT("\\") + GetHeroesDirW() + __TEXT("\\");
 
 	if (CreateDirectory(aiFolder.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
 	{
@@ -79,7 +82,7 @@ void SCGame::BeginGame(const wchar_t *UIOption)
 		{
 			do
 				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-					Competitors.Add(new Competitor(this, getAIAdapter((aiFolder + fd.cFileName).c_str())));
+					Competitors.emplace_back(new Competitor(this, getAIAdapter((aiFolder + fd.cFileName).c_str()), 0));
 			while (FindNextFile(hFind, &fd));
 			FindClose(hFind);
 		}
@@ -89,68 +92,83 @@ void SCGame::BeginGame(const wchar_t *UIOption)
 		// Wait for AIs
 	}
 
-	scsize comc = Competitors.Size();
-	for (scsize i = 0; i < comc; i++)
-	{
-		Competitors[i]->CreateHero();
-		HeroCount++;
-	}
+	for (auto com : Competitors)
+		Heroes.Add(com->CreateHero());
 }
 
-int SCGame::Present() const
+void SCGame::Present()
 {
-	UIDisplayData data = GetDisplayData();
-	return uiAdapter->Display(&data);
+	UIDisplayData data;
+	data.map = &Map;
+	data.heroes = (SCCollection*)&Heroes;
+	uiState = uiAdapter->Display(&data);
 }
 
 void SCGame::GetThinkData(AIThinkData *data) const
 {
-	data->vision = 0;
-}
-
-UIDisplayData SCGame::GetDisplayData() const
-{
-	UIDisplayData data;
-	data.map = &Map;
-	data.competitors = (SCCollection*)&Competitors;
-	return data;
+	const SCHero *hero = data->target;
+	data->vision = nullptr;
 }
 
 void SCGame::ApplyAction()
 {
-	for (auto p : actionLog)
+	for (auto p : actionLogApplying)
 	{
-		// TODO
+		switch (p.second.type)
+		{
+		case SCHeroActionType::Move:
+			p.first->position.y += 0.001;
+			break;
+		default:
+			break;
+		}
 	}
-	actionLog.clear();
 }
 
-void SCGame::Run()
+bool SCGame::Run()
 {
-	actionThinkedCount = 0;
-	scsize comc = Competitors.Size();
-	for (scsize i = 0; i < comc; i++)
-	{
-		Competitor *com = Competitors[i];
-		for (auto her : com->heroes)
-			threadPool->enqueue(HeroThinkThread, this, com->ai, her);
-	}
-
-	while (actionThinkedCount < HeroCount)
-		this_thread::sleep_for(milliseconds(1));
-
-	// 
+	writeMtx.lock();
+	actionLog.swap(actionLogApplying);
+	writeMtx.unlock();
 	ApplyAction();
-	actionLog.clear();
-}
-
-bool SCGame::UIClosed() const
-{
-	return false;
+	actionLogApplying.clear();
+	return uiState == 1;
 }
 
 void SCGame::EndGame()
 {
+	// stop all thread
+	running = false;
+	scsize HeroesSize = Heroes.Size();
+	for (scsize i = 0; i < HeroesSize; i++)
+	{
+		SCHero *hero = Heroes[i];
+		if (hero->aiThread)
+		{
+			thread* t = (thread*)hero->aiThread;
+			t->join();
+			delete t;
+		}
+	}
+	// generate statistics
+
+	// clear up
+	Heroes.Clear();
+	for (auto com : Competitors)
+		delete com;
+	Competitors.clear();
+}
+
+bool SCGame::SwitchUI(wstring &UIOption)
+{
+	if (UIOption == uiOption)
+		return false;
+
+	uiOption = UIOption;
+	if (uiAdapter)
+		delete uiAdapter;
+	uiAdapter = getUIAdapter(uiOption.c_str());
+	return true;
 }
 
 void SCGame::GetStatistics() const

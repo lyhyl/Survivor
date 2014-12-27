@@ -16,15 +16,10 @@ namespace CSharpUI2DImpl
         public UIAdapter()
         {
             mainForm = new SurvivorForm();
-            mainForm.FormClosing += mainForm_FormClosing;
+            mainForm.FormClosing += (object s, FormClosingEventArgs e) => { lock (stateLock) survivorState = 0; };
             formThread = new Thread(() => { Application.Run(mainForm); });
             formThread.Name = "Survivor C# 2D Impl";
             formThread.Start();
-        }
-
-        void mainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            lock (stateLock) survivorState = 0;
         }
 
         ~UIAdapter()

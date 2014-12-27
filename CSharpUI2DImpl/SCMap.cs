@@ -5,16 +5,17 @@ using System.Runtime.InteropServices;
 
 namespace CSharpUI2DImpl.Core
 {
-    public class SCMap
+    public class SCMap : SurvivorStructure
     {
         private _SCMap map;
-        private SCCollection<_SCMapResource> resources;
+        private SCSSCollection<_SCMapResource> resources;
 
         public Size Size { get { return new Size((int)map.width, (int)map.height); } }
         public UInt64 Width { get { return map.width; } }
         public UInt64 Height { get { return map.height; } }
 
         public SCMap(IntPtr pmap)
+            : base(pmap)
         {
             if (pmap != IntPtr.Zero)
             {
@@ -37,5 +38,14 @@ namespace CSharpUI2DImpl.Core
     {
         int type;
         _SCRegion region;
+    }
+
+    class SCMapResource : SurvivorStructure
+    {
+        public SCMapResource(IntPtr pmr)
+            : base(pmr)
+        {
+
+        }
     }
 }

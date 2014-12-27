@@ -14,77 +14,63 @@
 #include <SCCollection.h>
 #include <SCMap.h>
 
-#include "ThreadPool.h"
-
 using namespace std;
-
-void HeroThinkThread(class SCGame *game, AIAdapter *ai, SCHero *hero);
-
-static const int ThinkTimeLimit = 40;
 
 class Competitor
 {
-public:
+private:
+	static int HeroID;
 	class SCGame *game;
 	AIAdapter *ai;
-	vector<SCHero*> heroes;
-
-	Competitor(class SCGame *g = nullptr, AIAdapter *a = nullptr)
-	{
-		game = g;
-		ai = a;
-	}
-
-	~Competitor()
-	{
-		for (auto h : heroes)
-			delete h;
-	}
-
-	void CreateHero()
-	{
-		SCHero *hero = new SCHero;
-		heroes.push_back(hero);
-	}
+	double fairRatio;
+public:
+	Competitor(SCGame *g, AIAdapter *a, double fr);
+	SCHero* CreateHero();
 };
 
 class SCGame
 {
-	friend void HeroThinkThread(SCGame *game, AIAdapter *ai, SCHero *hero);
+	friend void HeroThinkThread(SCGame *game, SCHero *hero, double penaltyRatio);
+
+	typedef UIAdapter*(__cdecl *GetUIAdapterFunc)(const wchar_t*);
+	typedef AIAdapter*(__cdecl *GetAIAdapterFunc)(const wchar_t*);
 public:
 	SCGame();
-	SCGame(istream &in);
 	~SCGame();
 
-	void BeginGame(const wchar_t * UIOption = nullptr);
-	int Present() const;
-	void Run();
-	bool UIClosed() const;
+	void BeginGame(istream &in);
+	void BeginGame();
+	void BeginGame(wstring &UIOption);
+	bool Run();
+	void Present();
 	void EndGame();
+
+	bool SwitchUI(wstring &UIOption);
 
 	void GetStatistics() const;
 
 	void *GetLog();
 private:
 	void GetThinkData(AIThinkData *data) const;
-	UIDisplayData GetDisplayData() const;
 	void ApplyAction();
 
-	mutex writeMtx;
-	volatile __int64 actionThinkedCount = 0;
-
-	mutex doneMtx;
-	condition_variable doneCV;
+	GetUIAdapterFunc getUIAdapter;
+	GetAIAdapterFunc getAIAdapter;
 
 	HMODULE uiSelectorDll;
-	HMODULE aiSelectorDll;
+	wstring uiOption;
 	UIAdapter *uiAdapter = nullptr;
+	int uiState = 1;
+
+	HMODULE aiSelectorDll;
+	vector<Competitor*> Competitors;
+	SCCollectionX<SCHero*> Heroes;
+
+	mutex writeMtx;
+	hash_map<SCHero*, SCHeroAction> actionLog;
+	hash_map<SCHero*, SCHeroAction> actionLogApplying;
 
 	SCMap Map;
-	SCCollectionX<Competitor*> Competitors;
-	scint HeroCount = 0;
-	hash_map<SCHero*, SCHeroAction> actionLog;
 
-	ThreadPool *threadPool = nullptr;
+	bool running = true;
 };
-

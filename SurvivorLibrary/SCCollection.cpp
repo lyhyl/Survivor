@@ -107,7 +107,8 @@ void SCCollection::Clear()
 		delete pd;
 	}
 	size = 0;
-	head = nullptr;
+	head = new DataChunk;
+	memset(head, 0, sizeof(DataChunk));
 }
 
 scsize SCCollection::Find(in_t e)const

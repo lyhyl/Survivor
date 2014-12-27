@@ -7,7 +7,79 @@ using System.Threading.Tasks;
 
 namespace CSharpUI2DImpl.Core
 {
-    public class SCCollection<T>
+    public class SCSSCollection<T> : IEnumerable<T> where T : struct
+    {
+        private SCCollection collection = null;
+
+        public SCSSCollection() { collection = new SCCollection(); }
+        public SCSSCollection(SCCollection c) { collection = c; }
+
+        public static implicit operator SCCollection(SCSSCollection<T> c)
+        { return c.collection; }
+        public T this[ulong index]
+        {
+            get
+            {
+                return (T)Marshal.PtrToStructure(((_SCmixed_t)collection[index]).ptr, typeof(T));
+            }
+        }
+        public ulong Size
+        { get { return collection.Size; } }
+        public ulong Find(T e)
+        { return collection.Find(SCmixed_tConverter.Form(e)); }
+
+        public class Enumerator : IEnumerator<T>
+        {
+            private SCSSCollection<T> collection;
+            private long index;
+
+            public Enumerator(SCSSCollection<T> c)
+            {
+                collection = c;
+                index = -1;
+            }
+            public Enumerator(SCSSCollection<T> c, long i)
+            {
+                collection = c;
+                index = i;
+            }
+
+            public T Current
+            {
+                get { return collection[(ulong)index]; }
+            }
+
+            public void Dispose()
+            {
+            }
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return collection[(ulong)index]; }
+            }
+
+            public bool MoveNext()
+            {
+                return (ulong)(++index) < collection.Size;
+            }
+
+            public void Reset()
+            {
+                index = -1;
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new SCSSCollection<T>.Enumerator(this);
+        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return new SCSSCollection<T>.Enumerator(this);
+        }
+    }
+
+    public class SCCollection<T> : IEnumerable<T>
     {
         private SCCollection collection = null;
 
@@ -21,25 +93,66 @@ namespace CSharpUI2DImpl.Core
         {
             get
             {
-                return SCmixed_tConverter.To<T>((SCmixed_t)collection[index]);
+                return SCmixed_tConverter.To<T>((_SCmixed_t)collection[index]);
+            }
+        }
+        public ulong Size
+        { get { return collection.Size; } }
+        public ulong Find(T e)
+        { return collection.Find(SCmixed_tConverter.Form(e)); }
+
+        public class Enumerator : IEnumerator<T>
+        {
+            private SCCollection<T> collection;
+            private long index;
+
+            public Enumerator(SCCollection<T> c)
+            {
+                collection = c;
+                index = -1;
+            }
+            public Enumerator(SCCollection<T> c, long i)
+            {
+                collection = c;
+                index = i;
+            }
+
+            public T Current
+            {
+                get { return collection[(ulong)index]; }
+            }
+
+            public void Dispose()
+            {
+            }
+
+            object System.Collections.IEnumerator.Current
+            {
+                get { return collection[(ulong)index]; }
+            }
+
+            public bool MoveNext()
+            {
+                return (ulong)(++index) < collection.Size;
+            }
+
+            public void Reset()
+            {
+                index = -1;
             }
         }
 
-        public ulong Add(T e)
-        { return collection.Add(SCmixed_tConverter.Form(e)); }
-        public bool Remove(T e)
-        { return collection.Remove(SCmixed_tConverter.Form(e)); }
-        public bool RemoveAt(ulong i)
-        { return collection.RemoveAt(i); }
-        public ulong Size
-        { get { return collection.Size; } }
-        public void Clear()
-        { collection.Clear(); }
-        public ulong Find(T e)
-        { return collection.Find(SCmixed_tConverter.Form(e)); }
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new SCCollection<T>.Enumerator(this);
+        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return new SCCollection<T>.Enumerator(this);
+        }
     }
 
-    public class SCCollection
+    public class SCCollection : SurvivorStructure
     {
         [DllImport("SurvivorLibrary.dll", EntryPoint = "??0SCCollection@@QAE@XZ", CallingConvention = CallingConvention.ThisCall)]
         private static extern IntPtr Constructor(IntPtr c);
@@ -48,19 +161,19 @@ namespace CSharpUI2DImpl.Core
         private static extern IntPtr Destructor(IntPtr c);
 
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Add@SCCollection@@QAE_KTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
-        private static extern UInt64 CollectionAdd(IntPtr c, SCmixed_t cell);
+        private static extern UInt64 CollectionAdd(IntPtr c, _SCmixed_t cell);
 
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Clear@SCCollection@@QAEXXZ", CallingConvention = CallingConvention.ThisCall)]
         private static extern void CollectionClear(IntPtr c);
 
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Find@SCCollection@@QBE_KTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
-        private static extern UInt64 CollectionFind(IntPtr c, SCmixed_t e);
+        private static extern UInt64 CollectionFind(IntPtr c, _SCmixed_t e);
 
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Remove@SCCollection@@QAE_N_K@Z", CallingConvention = CallingConvention.ThisCall)]
         private static extern bool CollectionRemoveAt(IntPtr c, UInt64 i);
 
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Remove@SCCollection@@QAE_NTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
-        private static extern bool CollectionRemove(IntPtr c, SCmixed_t e);
+        private static extern bool CollectionRemove(IntPtr c, _SCmixed_t e);
 
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Size@SCCollection@@QBE_KXZ", CallingConvention = CallingConvention.ThisCall)]
         private static extern UInt64 CollectionSize(IntPtr c);
@@ -69,116 +182,115 @@ namespace CSharpUI2DImpl.Core
         [DllImport("SurvivorLibrary.dll", EntryPoint = "??ASCCollection@@QBEPATmixed_t@@_K@Z", CallingConvention = CallingConvention.ThisCall)]
         private static extern IntPtr CollectionIndexer(IntPtr c, UInt64 i);
 
-        private IntPtr _unmanaged = IntPtr.Zero;
-        private bool isCopy = false;
+        private bool isMarshal = false;
 
         public SCCollection()
+            : base(Memory.Alloc<_SCCollection>())
         {
-            _unmanaged = Memory.Alloc<_SCCollection>();
-            Constructor(_unmanaged);
+            Constructor(unmanagedPointer);
         }
 
-        public SCCollection(IntPtr nativeCollection)
+        public SCCollection(IntPtr pcollection)
+            : base(pcollection)
         {
-            _unmanaged = nativeCollection;
-            isCopy = true;
+            isMarshal = true;
         }
 
         ~SCCollection()
         {
-            if (!isCopy)
+            if (!isMarshal)
             {
-                Destructor(_unmanaged);
-                Memory.Free(_unmanaged);
+                Destructor(unmanagedPointer);
+                Memory.Free(unmanagedPointer);
             }
-            _unmanaged = IntPtr.Zero;
+            unmanagedPointer = IntPtr.Zero;
         }
 
         public object this[ulong index]
         {
             get
             {
-                return Marshal.PtrToStructure(CollectionIndexer(_unmanaged, index), typeof(SCmixed_t));
+                return Marshal.PtrToStructure(CollectionIndexer(unmanagedPointer, index), typeof(_SCmixed_t));
             }
         }
 
-        public ulong Add(SCmixed_t e)
-        { return CollectionAdd(_unmanaged, e); }
+        public ulong Add(_SCmixed_t e)
+        { return CollectionAdd(unmanagedPointer, e); }
         #region Add
         public ulong Add(IntPtr e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Add(Byte e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Add(Int16 e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Add(Int32 e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Add(Int64 e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Add(Single e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Add(Double e)
-        { return CollectionAdd(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionAdd(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         #endregion
 
-        public bool Remove(SCmixed_t e)
-        { return CollectionRemove(_unmanaged, e); }
+        public bool Remove(_SCmixed_t e)
+        { return CollectionRemove(unmanagedPointer, e); }
         #region Remove Element
         public bool Remove(IntPtr e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public bool Remove(Byte e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public bool Remove(Int16 e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public bool Remove(Int32 e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public bool Remove(Int64 e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public bool Remove(Single e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public bool Remove(Double e)
-        { return CollectionRemove(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionRemove(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         #endregion
 
         public bool RemoveAt(ulong i)
         {
-            return CollectionRemoveAt(_unmanaged, (UInt32)i);
+            return CollectionRemoveAt(unmanagedPointer, (UInt32)i);
         }
 
         public ulong Size
         {
             get
             {
-                return CollectionSize(_unmanaged);
+                return CollectionSize(unmanagedPointer);
             }
         }
 
         public void Clear()
         {
-            CollectionClear(_unmanaged);
+            CollectionClear(unmanagedPointer);
         }
 
-        public ulong Find(SCmixed_t e)
-        { return CollectionFind(_unmanaged, e); }
+        public ulong Find(_SCmixed_t e)
+        { return CollectionFind(unmanagedPointer, e); }
         #region Find
         public ulong Find(IntPtr e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Find(Byte e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Find(Int16 e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Find(Int32 e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Find(Int64 e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Find(Single e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         public ulong Find(Double e)
-        { return CollectionFind(_unmanaged, SCmixed_tConverter.Form(e)); }
+        { return CollectionFind(unmanagedPointer, SCmixed_tConverter.Form(e)); }
         #endregion
     }
 
-    [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct _SCCollection
     {
         public static UInt64 nop = UInt64.MaxValue;
@@ -187,8 +299,8 @@ namespace CSharpUI2DImpl.Core
         public UInt64 size;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 0x8)]
-    public struct SCmixed_t
+    [StructLayout(LayoutKind.Explicit)]
+    public struct _SCmixed_t
     {
         /**/
         [FieldOffset(0)]
@@ -218,9 +330,9 @@ namespace CSharpUI2DImpl.Core
         public static SCmixed_t Form(Int64 e) { SCmixed_t t = new SCmixed_t(); t.i8 = e; return t; }
         public static SCmixed_t Form(Single e) { SCmixed_t t = new SCmixed_t(); t.f2 = e; return t; }
         public static SCmixed_t Form(Double e) { SCmixed_t t = new SCmixed_t(); t.f4 = e; return t; }*/
-        public static SCmixed_t Form<T>(T e)
+        public static _SCmixed_t Form<T>(T e)
         {
-            SCmixed_t v = new SCmixed_t();
+            _SCmixed_t v = new _SCmixed_t();
             Type t = typeof(T);
             if (t == typeof(IntPtr))
                 v.ptr = (IntPtr)(object)e;
@@ -241,15 +353,15 @@ namespace CSharpUI2DImpl.Core
             return v;
         }
 
-        public static IntPtr ToPtr(SCmixed_t e) { return e.ptr; }
-        public static Byte ToI1(SCmixed_t e) { return e.i1; }
-        public static Int16 ToI2(SCmixed_t e) { return e.i2; }
-        public static Int32 ToI4(SCmixed_t e) { return e.i4; }
-        public static Int64 ToI8(SCmixed_t e) { return e.i8; }
-        public static Single ToF2(SCmixed_t e) { return e.f2; }
-        public static Double ToF4(SCmixed_t e) { return e.f4; }
+        public static IntPtr ToPtr(_SCmixed_t e) { return e.ptr; }
+        public static Byte ToI1(_SCmixed_t e) { return e.i1; }
+        public static Int16 ToI2(_SCmixed_t e) { return e.i2; }
+        public static Int32 ToI4(_SCmixed_t e) { return e.i4; }
+        public static Int64 ToI8(_SCmixed_t e) { return e.i8; }
+        public static Single ToF2(_SCmixed_t e) { return e.f2; }
+        public static Double ToF4(_SCmixed_t e) { return e.f4; }
 
-        public static T To<T>(SCmixed_t e)
+        public static T To<T>(_SCmixed_t e)
         {
             Type t = typeof(T);
             if (t == typeof(IntPtr))

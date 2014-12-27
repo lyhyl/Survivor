@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpUI2DImpl.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,10 +24,11 @@ namespace CSharpUI2DImpl
         double fadeOutTime = 500;
 
         int percentage = 0;
+        int colorBlend = 0;
         string message = "";
 
-        Bitmap beginBitmap;
-        Bitmap endBitmap;
+        Bitmap beginBitmap = Resources.SurvivorB;
+        Bitmap endBitmap = Resources.SurvivorR;
 
         public SplashScreenForm()
         {
@@ -88,6 +90,10 @@ namespace CSharpUI2DImpl
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+
+            int diff = percentage - colorBlend;
+            colorBlend = diff > 1 ? (int)(diff * .5) + percentage : percentage;
+
             byte op;
             if (startOutTime == DateTime.MinValue)
             {
@@ -99,8 +105,18 @@ namespace CSharpUI2DImpl
                 double delta = (DateTime.Now - startOutTime).TotalMilliseconds;
                 op = (byte)(255 * (1 - (Math.Min(fadeInTime, delta) / fadeInTime)));
             }
+
             Bitmap bmp = new Bitmap(beginBitmap);
             Graphics g = Graphics.FromImage(bmp);
+
+            ColorMatrix cm = new ColorMatrix();
+            cm.Matrix00 = cm.Matrix11 = cm.Matrix22 = cm.Matrix44 = 1;
+            cm.Matrix33 = colorBlend / 100.0f;
+            ImageAttributes ia = new ImageAttributes();
+            ia.SetColorMatrix(cm);
+            g.DrawImage(endBitmap, new Rectangle(0, 0, endBitmap.Width, endBitmap.Height),
+                0, 0, endBitmap.Width, endBitmap.Height, GraphicsUnit.Pixel, ia);
+
             StringFormat sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             g.DrawString((message == "" ? "" : "Loading : ") + message, DefaultFont, Brushes.Black, 256, 384, sf);

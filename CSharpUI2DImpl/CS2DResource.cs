@@ -3,7 +3,6 @@ using CSCore.Codecs;
 using System;
 using System.Drawing;
 using System.IO;
-using System.Media;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -46,6 +45,8 @@ namespace CSharpUI2DImpl
                     LoadingItem(this, new LoadingItemEventArgs(50, "Music"));
                 BackgroundMusic = CodecFactory.Instance.GetCodec(Path.Combine(CurrentPath, @"CS2DResources\Music\17 You Win (Original).mp3"));
                 Thread.Sleep(1500);
+                if (LoadingItem != null)
+                    LoadingItem(this, new LoadingItemEventArgs(100, ""));
             }
             catch (Exception ex)
             {

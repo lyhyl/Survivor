@@ -4,6 +4,27 @@ using System.Runtime.InteropServices;
 
 namespace CSharpUI2DImpl.Core
 {
+    public abstract class SurvivorStructure
+    {
+        protected IntPtr unmanagedPointer;
+        public SurvivorStructure(IntPtr p) { unmanagedPointer = p; }
+        public bool IsEqual(IntPtr p) { return unmanagedPointer == p; }
+        public bool IsEqual(SurvivorStructure p) { return unmanagedPointer == p.unmanagedPointer; }
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return unmanagedPointer == null;
+            SurvivorStructure ss = obj as SurvivorStructure;
+            if (ss == null)
+                return false;
+            return unmanagedPointer == ss.unmanagedPointer;
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct _SCPoint
     {
@@ -25,15 +46,28 @@ namespace CSharpUI2DImpl.Core
         IntPtr verties;
     }
 
+    public enum SCHeroActionType : int
+    {
+        Stay,
+        Move,
+        Run,
+        Turn,
+        Attack,
+        Climb
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct _SCHero
     {
        public Int64 id, hp, energy;
        public _SCPoint position;
        public _SCPoint direction;
+       public SCHeroActionType state;
+
+       private IntPtr ai, thread;
     }
 
-    public class SCHero
+    public class SCHero : SurvivorStructure
     {
         private _SCHero hero;
 
@@ -43,6 +77,7 @@ namespace CSharpUI2DImpl.Core
         }
 
         public SCHero(IntPtr phero)
+            : base(phero)
         {
             hero = (_SCHero)Marshal.PtrToStructure(phero, typeof(_SCHero));
         }
@@ -55,24 +90,27 @@ namespace CSharpUI2DImpl.Core
         public IntPtr competitors;
     }
 
-    public class UIDisplayData
+    public class UIDisplayData : SurvivorStructure
     {
+        private IntPtr pointer;
         private _UIDisplayData data;
         private SCMap map;
-        private SCCollection<SCHero> heroes;
+        private SCSSCollection<_SCHero> heroes;
 
-        public UIDisplayData(IntPtr d)
+        public UIDisplayData(IntPtr pdata)
+            : base(pdata)
         {
-            if (d != IntPtr.Zero)
+            pointer = pdata;
+            if (pdata != IntPtr.Zero)
             {
-                data = (_UIDisplayData)Marshal.PtrToStructure(d, typeof(_UIDisplayData));
+                data = (_UIDisplayData)Marshal.PtrToStructure(pdata, typeof(_UIDisplayData));
                 map = new SCMap(data.map);
-                heroes = new SCCollection<SCHero>(new SCCollection(data.competitors));
+                heroes = new SCSSCollection<_SCHero>(new SCCollection(data.competitors));
             }
         }
 
         public SCMap Map { get { return map; } }
-        public SCCollection<SCHero> Heroes { get { return heroes; } }
+        public SCSSCollection<_SCHero> Heroes { get { return heroes; } }
     }
 
     [StructLayout(LayoutKind.Sequential)]
