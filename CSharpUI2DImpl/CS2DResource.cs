@@ -40,11 +40,15 @@ namespace CSharpUI2DImpl
                 if (LoadingItem != null)
                     LoadingItem(this, new LoadingItemEventArgs(0, "Ground"));
                 GroundGrass = Image.FromFile(Path.Combine(CurrentPath, @"CS2DResources\Map\ground.png"));
-                Thread.Sleep(1500);
+                Thread.Sleep(500);
                 if (LoadingItem != null)
-                    LoadingItem(this, new LoadingItemEventArgs(50, "Music"));
+                    LoadingItem(this, new LoadingItemEventArgs(33, "Hero"));
+                HeroA = Image.FromFile(Path.Combine(CurrentPath, @"CS2DResources\Character\0.bmp"));
+                Thread.Sleep(500);
+                if (LoadingItem != null)
+                    LoadingItem(this, new LoadingItemEventArgs(66, "Music"));
                 BackgroundMusic = CodecFactory.Instance.GetCodec(Path.Combine(CurrentPath, @"CS2DResources\Music\17 You Win (Original).mp3"));
-                Thread.Sleep(1500);
+                Thread.Sleep(500);
                 if (LoadingItem != null)
                     LoadingItem(this, new LoadingItemEventArgs(100, ""));
             }

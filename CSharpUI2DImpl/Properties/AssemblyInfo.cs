@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CSharpUI2DImpl")]
 [assembly: AssemblyDescription("Survivor UI C# 2D Impl")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("LoengJanhou")]
+[assembly: AssemblyCompany("Wingkou Loeng")]
 [assembly: AssemblyProduct("CSharpUI2DImpl")]
-[assembly: AssemblyCopyright("Copyright © LoengJanhou 2014")]
+[assembly: AssemblyCopyright("Copyright © Wingkou Loeng 2014")]
 [assembly: AssemblyTrademark("Survivor")]
 [assembly: AssemblyCulture("")]
 

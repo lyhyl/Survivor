@@ -1,6 +1,7 @@
-﻿using CSharpUI2DImpl.Core;
+﻿using CSSurvivorLibrary;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 namespace CSharpUI2DImpl
@@ -9,23 +10,41 @@ namespace CSharpUI2DImpl
     {
         Image img;
         Size size;
-        _SCHero hero;
-        SCHeroActionType prvState = SCHeroActionType.Stay;
+        IntPtr ptr;
+        int animationTime;
+        _SCHero prvHero;
 
         public Character(Image i, Size s, IntPtr p)
         {
             img = i;
             size = s;
-            hero = (_SCHero)Marshal.PtrToStructure(p, typeof(_SCHero));
+            ptr = p;
+            animationTime = 0;
+            prvHero = (_SCHero)Marshal.PtrToStructure(ptr, typeof(_SCHero));
         }
 
-        void Draw(Graphics g)
+        public void Draw(Graphics g)
         {
-            RectangleF src = new RectangleF(0, 0, 79, 79);
-            RectangleF dest = new RectangleF((float)hero.position.x - 20, (float)hero.position.y - 40, 40, 40);
-            g.DrawImage(img, dest, src, GraphicsUnit.Pixel);
+            _SCHero curHero = (_SCHero)Marshal.PtrToStructure(ptr, typeof(_SCHero));
 
-            prvState = hero.state;
+            if (curHero.state != prvHero.state)
+                animationTime = 0;
+
+            animationTime %= 10000;
+            int frame = animationTime / 1000;
+
+            Rectangle dest = new Rectangle((int)curHero.position.x - size.Width / 2,
+                (int)curHero.position.y - size.Height, size.Width, size.Height);
+            ImageAttributes ia = new ImageAttributes();
+            Color col = Color.FromArgb(10, 10, 10);
+            ia.SetColorKey(Color.Black, col);
+            g.DrawImage(img, dest, 0, 0, size.Width, size.Height, GraphicsUnit.Pixel, ia);
+
+            g.DrawLine(Pens.Black, new PointF((float)curHero.position.x, (float)curHero.position.y),
+                new PointF((float)(curHero.position.x + curHero.direction.x * 20),
+                    (float)(curHero.position.y + curHero.direction.y * 20)));
+
+            prvHero = curHero;
         }
     }
 }

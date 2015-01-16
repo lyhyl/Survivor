@@ -1,9 +1,8 @@
-﻿using CSharpUI2DImpl.Core;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace CSharpUI2DImpl.Core
+namespace CSSurvivorLibrary
 {
     public class SCMap : SurvivorStructure
     {
@@ -27,9 +26,9 @@ namespace CSharpUI2DImpl.Core
     [StructLayout(LayoutKind.Sequential)]
     public struct _SCMap
     {
-        public static Int64 DefaultSize = 5120;
-        public UInt32 seed;
-        public UInt64 width, height;
+        public static ulong DefaultSize = 5120;
+        public uint seed;
+        public ulong width, height;
         public IntPtr resources;
     }
 

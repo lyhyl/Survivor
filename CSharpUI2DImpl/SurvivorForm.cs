@@ -1,7 +1,8 @@
 ﻿using CSCore.SoundOut;
-using CSharpUI2DImpl.Core;
 using CSharpUI2DImpl.Properties;
+using CSSurvivorLibrary;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
@@ -34,6 +35,8 @@ namespace CSharpUI2DImpl
 
         private ISoundOut MusicPlayer = WasapiOut.IsSupportedOnCurrentPlatform ?
             (ISoundOut)new WasapiOut() : new DirectSoundOut();
+
+        private List<Character> characters = new List<Character>();
 
         public SurvivorForm()
         {
@@ -82,6 +85,9 @@ namespace CSharpUI2DImpl
         private void FirstPresentInitialize(UIDisplayData data)
         {
             prvTime = DateTime.Now;
+
+            foreach (var ph in data.Heroes.RawCollection)
+                characters.Add(new Character(resource.HeroA, new Size(80, 80), ph));
 
             #region generate mini map
             const float percent = .75f;
@@ -292,16 +298,10 @@ namespace CSharpUI2DImpl
 
         private void DrawWorldElements(Graphics g)
         {
-            foreach (_SCHero hero in displayData.Heroes)
-                DrawHero(g, hero);
-        }
-
-        private void DrawHero(Graphics g, _SCHero hero)
-        {
-            float vx = (float)(hero.position.x - curTarget.X) + (ClientSize.Width >> 1);
-            float vy = (float)(hero.position.y - curTarget.Y) + (ClientSize.Height >> 1);
-            if (vx > 0 && vx < ClientSize.Width && vy > 0 && vy < ClientSize.Height)
-                g.FillRectangle(Brushes.Red, vx , vy , 50, 50);
+            g.TranslateTransform(-curTarget.X + (ClientSize.Width >> 1), -curTarget.Y + (ClientSize.Height >> 1));
+            foreach (var hero in characters)
+                hero.Draw(g);
+            g.ResetTransform();
         }
 
         private void DrawMiniMap(Graphics g)

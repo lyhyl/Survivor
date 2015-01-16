@@ -2,6 +2,7 @@
 #include "SCCollection.h"
 
 #define CHUNK_SIZE (62) /* (62+1+1)*8 */
+
 struct DataChunk
 {
 	mixed_t data[CHUNK_SIZE];
@@ -44,7 +45,7 @@ out_t *SCCollection::operator[](scsize i)const
 scsize SCCollection::Add(in_t e)
 {
 	DataChunk *pdata = head;
-	DataChunk *plast = 0;
+	DataChunk *plast = nullptr;
 	while (pdata)
 	{
 		if (pdata->count < CHUNK_SIZE)

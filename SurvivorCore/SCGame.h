@@ -1,10 +1,11 @@
 #pragma once
 #include <Windows.h>
 
-#include <atomic>
 #include <condition_variable>
 #include <thread>
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <fstream>
 #include <hash_map>
 #include <vector>
@@ -16,21 +17,30 @@
 
 using namespace std;
 
+class HeroProperty
+{
+public:
+	static const scfloat MoveSpeed;
+	static const scfloat RunSpeed;
+	static const scfloat MinTurnAngle;
+	static const scfloat MaxTurnAngle;
+};
+
 class Competitor
 {
 private:
 	static int HeroID;
 	class SCGame *game;
 	AIAdapter *ai;
-	double fairRatio;
+	scfloat fairRatio;
 public:
-	Competitor(SCGame *g, AIAdapter *a, double fr);
+	Competitor(SCGame *g, AIAdapter *a, scfloat fr);
 	SCHero* CreateHero();
 };
 
 class SCGame
 {
-	friend void HeroThinkThread(SCGame *game, SCHero *hero, double penaltyRatio);
+	friend void HeroThinkThread(SCGame *game, SCHero *hero, scfloat fairRatio);
 
 	typedef UIAdapter*(__cdecl *GetUIAdapterFunc)(const wchar_t*);
 	typedef AIAdapter*(__cdecl *GetAIAdapterFunc)(const wchar_t*);

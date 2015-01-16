@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CSharpUI2DImpl.Core
+namespace CSSurvivorLibrary
 {
     public class SCSSCollection<T> : IEnumerable<T> where T : struct
     {
@@ -23,6 +20,11 @@ namespace CSharpUI2DImpl.Core
                 return (T)Marshal.PtrToStructure(((_SCmixed_t)collection[index]).ptr, typeof(T));
             }
         }
+        public IntPtr Raw(ulong index)
+        {
+            return ((_SCmixed_t)collection[index]).ptr;
+        }
+        public SCCollection<IntPtr> RawCollection { get { return new SCCollection<IntPtr>(collection); } }
         public ulong Size
         { get { return collection.Size; } }
         public ulong Find(T e)
@@ -154,32 +156,67 @@ namespace CSharpUI2DImpl.Core
 
     public class SCCollection : SurvivorStructure
     {
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "??0SCCollection@@QAE@XZ", CallingConvention = CallingConvention.ThisCall)]
+#else
+        [DllImport("SurvivorLibrary.dll", EntryPoint = "??0SCCollection@@QEAA@XZ", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern IntPtr Constructor(IntPtr c);
-
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "??1SCCollection@@QAE@XZ", CallingConvention = CallingConvention.ThisCall)]
+#else
+         [DllImport("SurvivorLibrary.dll", EntryPoint = "??1SCCollection@@QEAA@XZ", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern IntPtr Destructor(IntPtr c);
-
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Add@SCCollection@@QAE_KTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+#else
+        [DllImport("SurvivorLibrary.dll", EntryPoint = "?Add@SCCollection@@QEAA_KTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern UInt64 CollectionAdd(IntPtr c, _SCmixed_t cell);
-
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Clear@SCCollection@@QAEXXZ", CallingConvention = CallingConvention.ThisCall)]
+#else
+        [DllImport("SurvivorLibrary.dll", EntryPoint = "?Clear@SCMap@@AEAAXXZ", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern void CollectionClear(IntPtr c);
-
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Find@SCCollection@@QBE_KTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+#else
+         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Find@SCCollection@@QEBA_KTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern UInt64 CollectionFind(IntPtr c, _SCmixed_t e);
-
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Remove@SCCollection@@QAE_N_K@Z", CallingConvention = CallingConvention.ThisCall)]
+#else
+        [DllImport("SurvivorLibrary.dll", EntryPoint = "?Remove@SCCollection@@QEAA_N_K@Z", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern bool CollectionRemoveAt(IntPtr c, UInt64 i);
-
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Remove@SCCollection@@QAE_NTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+#else
+         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Remove@SCCollection@@QEAA_NTmixed_t@@@Z", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern bool CollectionRemove(IntPtr c, _SCmixed_t e);
 
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "?Size@SCCollection@@QBE_KXZ", CallingConvention = CallingConvention.ThisCall)]
+#else
+        [DllImport("SurvivorLibrary.dll", EntryPoint = "?Size@SCCollection@@QEBA_KXZ", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern UInt64 CollectionSize(IntPtr c);
-
-        //[return: MarshalAs(UnmanagedType.LPStruct)]
+        
+#if WIN32
         [DllImport("SurvivorLibrary.dll", EntryPoint = "??ASCCollection@@QBEPATmixed_t@@_K@Z", CallingConvention = CallingConvention.ThisCall)]
+#else
+        [DllImport("SurvivorLibrary.dll", EntryPoint = "??ASCCollection@@QEBAPEATmixed_t@@_K@Z", CallingConvention = CallingConvention.ThisCall)]
+#endif
         private static extern IntPtr CollectionIndexer(IntPtr c, UInt64 i);
 
         private bool isMarshal = false;
@@ -304,21 +341,21 @@ namespace CSharpUI2DImpl.Core
     {
         /**/
         [FieldOffset(0)]
-        public Byte i1;
+        public byte i1;
         [FieldOffset(0)]
-        public Int16 i2;
+        public short i2;
         [FieldOffset(0)]
-        public Int32 i4;
+        public int i4;
         [FieldOffset(0)]
-        public Int64 i8;
+        public long i8;
         /**/
         [FieldOffset(0)]
         public IntPtr ptr;
         /**/
         [FieldOffset(0)]
-        public Single f2;
+        public float f2;
         [FieldOffset(0)]
-        public Double f4;
+        public double f4;
     }
 
     internal static class SCmixed_tConverter
@@ -336,17 +373,17 @@ namespace CSharpUI2DImpl.Core
             Type t = typeof(T);
             if (t == typeof(IntPtr))
                 v.ptr = (IntPtr)(object)e;
-            else if (t == typeof(Int64))
+            else if (t == typeof(long))
                 v.i8 = (Int64)(object)e;
-            else if (t == typeof(Int32))
+            else if (t == typeof(int))
                 v.i4 = (Int32)(object)e;
-            else if (t == typeof(Int16))
+            else if (t == typeof(short))
                 v.i2 = (Int16)(object)e;
-            else if (t == typeof(Byte))
+            else if (t == typeof(byte))
                 v.i1 = (Byte)(object)e;
-            else if (t == typeof(Double))
+            else if (t == typeof(double))
                 v.f4 = (Double)(object)e;
-            else if (t == typeof(Single))
+            else if (t == typeof(float))
                 v.f2 = (Single)(object)e;
             else
                 throw new ArgumentException("Unable convert form " + t.Name);
@@ -366,17 +403,17 @@ namespace CSharpUI2DImpl.Core
             Type t = typeof(T);
             if (t == typeof(IntPtr))
                 return (T)(object)ToPtr(e);
-            else if (t == typeof(Int64))
+            else if (t == typeof(long))
                 return (T)(object)ToI8(e);
-            else if (t == typeof(Int32))
+            else if (t == typeof(int))
                 return (T)(object)ToI4(e);
-            else if (t == typeof(Int16))
+            else if (t == typeof(short))
                 return (T)(object)ToI2(e);
-            else if (t == typeof(Byte))
+            else if (t == typeof(byte))
                 return (T)(object)ToI1(e);
-            else if (t == typeof(Double))
+            else if (t == typeof(double))
                 return (T)(object)ToF4(e);
-            else if (t == typeof(Single))
+            else if (t == typeof(float))
                 return (T)(object)ToF2(e);
             throw new ArgumentException("Unable convert to " + t.Name);
         }

@@ -1,4 +1,4 @@
-﻿using CSharpUI2DImpl.Core;
+﻿using CSSurvivorLibrary;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;

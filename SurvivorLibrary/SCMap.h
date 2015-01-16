@@ -1,6 +1,6 @@
 #pragma once
 #include <fstream>
-#include "SCUtilities.h"
+#include "SCMath.h"
 #include "SCCollection.h"
 using namespace std;
 
@@ -12,7 +12,7 @@ public:
 	static const scsize DefaultSize = 5120;
 
 	SCMap(scsize w = DefaultSize, scsize h = DefaultSize);
-	SCMap(int seed, scsize w = DefaultSize, scsize h = DefaultSize);
+	SCMap(unsigned seed, scsize w = DefaultSize, scsize h = DefaultSize);
 	SCMap(istream &in);
 	~SCMap();
 
@@ -22,7 +22,7 @@ private:
 	unsigned seed;
 	scsize width, height;
 	// warning C4251
-	// Just treat it as SCCollection outside
+	// Just treat it as SCCollection* outside
 #pragma warning(disable:4251)
 	SCCollectionX<SCMapResource*> *resources;
 #pragma warning(default:4251)
@@ -42,21 +42,21 @@ enum class SCMapResourceType :int
 	Charcoal,
 	// Barrier
 	Rock, Hill,
-	// !
+	// Trap
 	Water, Stream, Lake,
 	Hole, Fire, Smoke,
 	// Weather
-	Fog, Rain, Thunder
+	Fog, Rain, Thunder,
+	//
+	TypeCount
 };
 
 struct API SCMapResource
 {
 public:
-	SCMapResource()
+	SCMapResource(SCRegion &reg, SCMapResourceType t = SCMapResourceType::Rock)
 	{
-	}
-	SCMapResource(SCRegion &reg)
-	{
+		type = t;
 		region = reg;
 	}
 private:

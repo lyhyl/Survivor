@@ -1,20 +1,26 @@
 #include <chrono>
 #include <future>
+#include "SCMap.h"
 #include "SCGame.h"
 
 using namespace std;
 using namespace std::chrono;
+
+const scfloat HeroProperty::MoveSpeed = .5;
+const scfloat HeroProperty::RunSpeed = .9;
+const scfloat HeroProperty::MinTurnAngle = -1.57079632679489661923;
+const scfloat HeroProperty::MaxTurnAngle = 1.57079632679489661923;
 
 wstring GetExePath()
 {
 	TCHAR buffer[MAX_PATH];
 	GetModuleFileName(NULL, buffer, MAX_PATH);
 	wstring path(buffer);
-	wstring::size_type pos = path.find_last_of(__TEXT("\\/"));
+	wstring::size_type pos = path.find_last_of(L"\\/");
 	return path.substr(0, pos);
 }
 
-void HeroThinkThread(SCGame *game, SCHero *hero, double fairRatio)
+void HeroThinkThread(SCGame *game, SCHero *hero, scfloat fairRatio)
 {
 	while (game->running)
 	{
@@ -24,7 +30,8 @@ void HeroThinkThread(SCGame *game, SCHero *hero, double fairRatio)
 		auto begin = steady_clock::now();
 		SCHeroAction action = hero->ai->Think(&data);
 		auto end = steady_clock::now();
-		this_thread::sleep_for(milliseconds((long long)(fairRatio * (begin - end).count())));
+		long long d = (long long)(fairRatio * (begin - end).count());
+		this_thread::sleep_for(milliseconds(max(10, d)));
 		game->writeMtx.lock();
 		game->actionLog[hero] = action;
 		game->writeMtx.unlock();
@@ -33,20 +40,21 @@ void HeroThinkThread(SCGame *game, SCHero *hero, double fairRatio)
 
 int Competitor::HeroID = 0;
 
-Competitor::Competitor(SCGame *g, AIAdapter *a, double fr) :ai(a), game(g), fairRatio(fr){}
+Competitor::Competitor(SCGame *g, AIAdapter *a, scfloat fr) :ai(a), game(g), fairRatio(fr){}
 
 SCHero* Competitor::CreateHero()
 {
-	SCHero *hero = new SCHero{ HeroID++, 100, 10, { 2560, 2560 }, { 1, 1 }, SCHeroActionType::Stay, ai };
+	SCHero *hero = new SCHero{ HeroID++, 100, 10, { 2560, 2560 }, { 1, 0 },
+		SCHeroActionType::Stay, system_clock::to_time_t(steady_clock::now()), ai };
 	hero->aiThread = new thread(HeroThinkThread, game, hero, fairRatio);
 	return hero;
 }
 
 SCGame::SCGame()
 {
-	uiSelectorDll = LoadLibrary(__TEXT(".\\UIAdapterSelector.dll"));
+	uiSelectorDll = LoadLibrary(L".\\UIAdapterSelector.dll");
 	getUIAdapter = (GetUIAdapterFunc)GetProcAddress(uiSelectorDll, "CreateUIAdapter");
-	aiSelectorDll = LoadLibrary(__TEXT(".\\AIAdapterSelector.dll"));
+	aiSelectorDll = LoadLibrary(L".\\AIAdapterSelector.dll");
 	getAIAdapter = (GetAIAdapterFunc)GetProcAddress(aiSelectorDll, "CreateAIAdapter");
 }
 
@@ -64,7 +72,7 @@ void SCGame::BeginGame(istream &in)
 
 void SCGame::BeginGame()
 {
-	BeginGame(wstring(__TEXT("C#2D")));
+	BeginGame(wstring(L"C#3D"));
 }
 
 void SCGame::BeginGame(wstring &UIOption)
@@ -72,17 +80,20 @@ void SCGame::BeginGame(wstring &UIOption)
 	uiOption = UIOption;
 
 	uiAdapter = getUIAdapter(uiOption.c_str());
-	wstring aiFolder = GetExePath() + __TEXT("\\") + GetHeroesDirW() + __TEXT("\\");
+	wstring aiFolder = GetExePath() + L"\\" + GetHeroesDirW() + L"\\";
 
 	if (CreateDirectory(aiFolder.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
 	{
 		WIN32_FIND_DATA fd;
-		HANDLE hFind = FindFirstFile((aiFolder + __TEXT("*.*")).c_str(), &fd);
+		HANDLE hFind = FindFirstFile((aiFolder + L"*.*").c_str(), &fd);
 		if (hFind != INVALID_HANDLE_VALUE)
 		{
 			do
 				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-					Competitors.emplace_back(new Competitor(this, getAIAdapter((aiFolder + fd.cFileName).c_str()), 0));
+				{
+					auto fullName = aiFolder + fd.cFileName;
+					Competitors.emplace_back(new Competitor(this, getAIAdapter(fullName.c_str()), 0));
+				}
 			while (FindNextFile(hFind, &fd));
 			FindClose(hFind);
 		}
@@ -110,17 +121,43 @@ void SCGame::GetThinkData(AIThinkData *data) const
 	data->vision = nullptr;
 }
 
+inline void TurnDirection(SCVector2 &v, scfloat a)
+{
+	SCRotate(v, max(min(a, HeroProperty::MaxTurnAngle), HeroProperty::MinTurnAngle));
+	SCNormalize(v);
+}
+
+inline void MoveDirection(SCVector2 &v, SCVector2 &d, scfloat speed)
+{
+	v += d * speed;
+}
+
 void SCGame::ApplyAction()
 {
 	for (auto p : actionLogApplying)
 	{
+		__time64_t now = system_clock::to_time_t(steady_clock::now());
+		__time64_t d = now - p.first->prvTime;
+		p.first->prvTime = now;
+
 		switch (p.second.type)
 		{
 		case SCHeroActionType::Move:
-			p.first->position.y += 0.001;
+			TurnDirection(p.first->direction, p.second.angle);
+			MoveDirection(p.first->position, p.first->direction, HeroProperty::MoveSpeed);
 			break;
-		default:
+		case SCHeroActionType::Run:
+			TurnDirection(p.first->direction, p.second.angle);
+			MoveDirection(p.first->position, p.first->direction, HeroProperty::RunSpeed);
 			break;
+		case SCHeroActionType::Turn:
+			TurnDirection(p.first->direction, p.second.angle);
+			break;
+		case SCHeroActionType::Attack:
+			break;
+		case SCHeroActionType::Climb:
+			break;
+		default:break;
 		}
 	}
 }

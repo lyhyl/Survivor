@@ -14,9 +14,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute(L"UIAdapterSelector")];
 [assembly:AssemblyDescriptionAttribute(L"Survivor UI Selector")];
 [assembly:AssemblyConfigurationAttribute(L"")];
-[assembly:AssemblyCompanyAttribute(L"LoengJanhou")];
+[assembly:AssemblyCompanyAttribute(L"Wingkou Loeng")];
 [assembly:AssemblyProductAttribute(L"UIAdapterSelector")];
-[assembly:AssemblyCopyrightAttribute(L"Copyright (c) LoengJanhou 2014")];
+[assembly:AssemblyCopyrightAttribute(L"Copyright (c) Wingkou Loeng 2014")];
 [assembly:AssemblyTrademarkAttribute(L"Survivor")];
 [assembly:AssemblyCultureAttribute(L"")];
 

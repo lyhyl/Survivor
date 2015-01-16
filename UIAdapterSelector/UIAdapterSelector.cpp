@@ -11,7 +11,9 @@ using namespace System::Reflection;
 
 static bool Initialized = false;
 static gcroot<Assembly^> CSharpAssembly;
+
 static CSharpImplWapper *_CSharpImpl;
+static CSharpImplWapper *_XNAImpl;
 static HMODULE *_CImpl;
 
 void InitializeCSharp2D()
@@ -21,15 +23,32 @@ void InitializeCSharp2D()
 	CSharpAssembly = Assembly::LoadFile(assPath);
 	_CSharpImpl = new CSharpImplWapper(CSharpAssembly->CreateInstance(csClassName),
 		CSharpAssembly->GetType(csClassName)->GetMethod("Display"));
+	Initialized = true;
+}
+
+void InitializeXNA3D()
+{
+	String ^csClassName = "XNAUI3DImpl.UIAdapter";
+	String ^assPath = Path::Combine(Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location), "XNAUI3DImpl.dll");
+	CSharpAssembly = Assembly::LoadFile(assPath);
+	_XNAImpl = new CSharpImplWapper(CSharpAssembly->CreateInstance(csClassName),
+		CSharpAssembly->GetType(csClassName)->GetMethod("Display"));
+	Initialized = true;
 }
 
 void *CreateUIAdapter(const wchar_t* option)
 {
-	if (wcscmp(option, __TEXT("C#2D")) == 0)
+	if (wcscmp(option, L"C#2D") == 0)
 	{
 		if (!Initialized)
 			InitializeCSharp2D();
 		return _CSharpImpl;
+	}
+	else if (wcscmp(option, L"C#3D") == 0)
+	{
+		if (!Initialized)
+			InitializeXNA3D();
+		return _XNAImpl;
 	}
 
 	return 0;

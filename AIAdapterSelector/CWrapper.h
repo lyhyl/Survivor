@@ -2,14 +2,14 @@
 #include <Windows.h>
 #include "AIAdapter.h"
 
-class CImplWapper :AIAdapter
+class CImplWrapper :AIAdapter
 {
 private:
 	typedef AIAdapter*(*pNewAdapter)();
 	AIAdapter *pAI = nullptr;
 	HMODULE hDLL;
 public:
-	CImplWapper(wstring &file)
+	CImplWrapper(wstring &file)
 	{
 		hDLL = LoadLibrary(file.c_str());
 		if (hDLL)
@@ -21,9 +21,11 @@ public:
 		else
 		{
 			DWORD e = GetLastError();
+			TCHAR msg[50] = L"";
+			MessageBox(0, msg, L"Error", 0);
 		}
 	}
-	~CImplWapper()
+	~CImplWrapper()
 	{
 		if (pAI)
 			delete pAI;

@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace CSharpUI2DImpl.Core
+namespace CSSurvivorLibrary
 {
     public abstract class SurvivorStructure
     {
@@ -40,9 +40,9 @@ namespace CSharpUI2DImpl.Core
     [StructLayout(LayoutKind.Sequential)]
     struct _SCRegion
     {
-        UInt64 triangleCount;
+        ulong triangleCount;
         IntPtr triangles;
-        UInt64 vertexCount;
+        ulong vertexCount;
         IntPtr verties;
     }
 
@@ -59,12 +59,14 @@ namespace CSharpUI2DImpl.Core
     [StructLayout(LayoutKind.Sequential)]
     public struct _SCHero
     {
-       public Int64 id, hp, energy;
-       public _SCPoint position;
-       public _SCPoint direction;
-       public SCHeroActionType state;
+        public ulong id, hp, energy;
+        public _SCPoint position;
+        public _SCPoint direction;
+        public SCHeroActionType state;
 
-       private IntPtr ai, thread;
+        public ulong prvTime;
+
+        private IntPtr aiPtr, threadPtr;
     }
 
     public class SCHero : SurvivorStructure
@@ -87,12 +89,11 @@ namespace CSharpUI2DImpl.Core
     public struct _UIDisplayData
     {
         public IntPtr map;
-        public IntPtr competitors;
+        public IntPtr heroes;
     }
 
     public class UIDisplayData : SurvivorStructure
     {
-        private IntPtr pointer;
         private _UIDisplayData data;
         private SCMap map;
         private SCSSCollection<_SCHero> heroes;
@@ -100,12 +101,11 @@ namespace CSharpUI2DImpl.Core
         public UIDisplayData(IntPtr pdata)
             : base(pdata)
         {
-            pointer = pdata;
             if (pdata != IntPtr.Zero)
             {
                 data = (_UIDisplayData)Marshal.PtrToStructure(pdata, typeof(_UIDisplayData));
                 map = new SCMap(data.map);
-                heroes = new SCSSCollection<_SCHero>(new SCCollection(data.competitors));
+                heroes = new SCSSCollection<_SCHero>(new SCCollection(data.heroes));
             }
         }
 

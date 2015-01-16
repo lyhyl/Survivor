@@ -17,13 +17,13 @@ void InitJavaVM()
 
 	TCHAR jpath[MAX_PATH] = { 0 };
 	DWORD bufferSize = sizeof(jpath);
-	RegGetValue(HKEY_LOCAL_MACHINE, __TEXT("SOFTWARE\\JavaSoft\\Java Runtime Environment\\1.8\\"),
-		__TEXT("RuntimeLib"), RRF_RT_REG_SZ, 0, jpath, &bufferSize);
+	RegGetValue(HKEY_LOCAL_MACHINE, L"SOFTWARE\\JavaSoft\\Java Runtime Environment\\1.8\\",
+		L"RuntimeLib", RRF_RT_REG_SZ, 0, jpath, &bufferSize);
 
 	HINSTANCE jvmDLL = LoadLibrary(jpath);
 	if (jvmDLL == NULL)
 	{
-		MessageBox(0, __TEXT("Unable to initialize Java VM"), __TEXT("Error"), 0);
+		MessageBox(0, L"Unable to initialize Java VM", L"Error", 0);
 		exit(1);
 	}
 	pCreateJavaVM CreateJavaVM = (pCreateJavaVM)GetProcAddress(jvmDLL, "JNI_CreateJavaVM");
@@ -45,24 +45,24 @@ void InitJavaVM()
 	vm_args.ignoreUnrecognized = JNI_TRUE;
 	if (CreateJavaVM(&jvm, (void**)&env, &vm_args) == JNI_ERR)
 	{
-		MessageBox(0, __TEXT("Unable to init java vm"), __TEXT("Error"), 0);
+		MessageBox(0, L"Unable to init java vm", L"Error", 0);
 		exit(1);
 	}
 	JavaInitialized = true;
 }
 
-class JavaImplWapper :AIAdapter
+class JavaImplWrapper :AIAdapter
 {
 private:
 	jobject jAdapter = nullptr;
 	jclass jAdapterClass = nullptr;
 	jmethodID jThinkMethodID = nullptr;
 public:
-	JavaImplWapper(wstring &file)
+	JavaImplWrapper(wstring &file)
 	{
 		if (!JavaInitialized)
 			InitJavaVM();
-		wstring::size_type nb = file.find_last_of(__TEXT("\\/"));
+		wstring::size_type nb = file.find_last_of(L"\\/");
 		wstring::size_type ne = file.find_last_of(L'.');
 		string className(file.begin() + nb + 1, file.begin() + ne);
 		jAdapterClass = env->FindClass((className).c_str());
@@ -73,7 +73,7 @@ public:
 			jvmRef++;
 		}
 	}
-	~JavaImplWapper()
+	~JavaImplWrapper()
 	{
 		jvmRef--;
 		if (jvmRef == 0)

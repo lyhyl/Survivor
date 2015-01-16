@@ -24,13 +24,13 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JavaWapper.h">
+    <ClInclude Include="Wrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CWapper.h">
+    <ClInclude Include="JavaWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Wapper.h">
+    <ClInclude Include="CWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

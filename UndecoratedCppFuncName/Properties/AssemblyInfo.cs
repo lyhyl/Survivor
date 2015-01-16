@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("UndecoratedCppFuncName")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("LoengJanhou")]
+[assembly: AssemblyCompany("Wingkou Loeng")]
 [assembly: AssemblyProduct("UndecoratedCppFuncName")]
-[assembly: AssemblyCopyright("Copyright © LoengJanhou 2014")]
+[assembly: AssemblyCopyright("Copyright © Wingkou Loeng 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

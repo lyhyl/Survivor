@@ -1,6 +1,6 @@
 #pragma once
 #include <chrono>
-#include "SCUtilities.h"
+#include "SCMath.h"
 #include "SCMap.h"
 
 using namespace std;
@@ -40,6 +40,8 @@ struct API SCHero
 	SCVector2 direction;
 	SCHeroActionType state;
 
+	sctime prvTime;
+
 	class AIAdapter *ai;
 	void *aiThread;
 };
@@ -60,8 +62,8 @@ const SCHeroAction API NoAction = { SCHeroActionType::Stay, 0 };
 
 struct API UIDisplayData
 {
-	 const SCMap * map = nullptr;
-	 const SCCollection * heroes = nullptr;
+	const SCMap * map = nullptr;
+	const SCCollection * heroes = nullptr;
 };
 
 struct API AIThinkData

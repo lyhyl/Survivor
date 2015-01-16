@@ -1,5 +1,6 @@
 #pragma once
 #include "SCDefines.h"
+
 typedef union API mixed_t
 {
 	/**/
@@ -13,8 +14,11 @@ typedef union API mixed_t
 	float f2;
 	double f4;
 } out_t, in_t;
+
 class API SCCollection
 {
+	template<typename T>
+	friend class SCCollectionXIterator;
 private:
 	static const scsize nop = (scsize)(-1);
 	struct DataChunk *head;
@@ -30,6 +34,99 @@ public:
 	scsize Size()const;
 	void Clear();
 	scsize Find(in_t e)const;
+};
+
+template<typename T>
+class SCCollectionXIterator
+{
+	struct DataChunk *chunk;
+	scsize offset;
+public:
+	SCCollectionXIterator(SCCollection &c, scsize index)
+	{
+		DataChunk *dc = c.head;
+		while (dc->count < index)
+			if (dc->nxt)
+			{
+				index -= dc->count;
+				dc = dc->nxt;
+			}
+			else
+			{
+				dc = 0;
+				index = SCCollection::nop;
+				break;
+			}
+		chunk = dc;
+		offset = index;
+	}
+	inline bool operator==(SCCollectionXIterator<T> &i){ return chunk == i.chunk&&offset == i.offset; }
+	inline bool operator!=(SCCollectionXIterator<T> &i){ return !this->operator==(i); }
+	inline T operator*(){ return (T)chunk->data[offset]; }
+	inline SCCollectionXIterator<T> operator++()
+	{
+		if (++offset >= chunk->count)
+		{
+			if (chunk->nxt)
+			{
+				chunk = chunk->nxt;
+				offset = 0;
+			}
+			else
+			{
+				chunk = 0;
+				offset = SCCollection::nop;
+			}
+		}
+		return *this;
+	}
+	inline SCCollectionXIterator<T> operator--()
+	{
+		if (offset == 0)
+		{
+			if (chunk->prv)
+			{
+				chunk = chunk->prv;
+				offset = chunk->count - 1;
+			}
+		}
+		else
+			--offset;
+		return *this;
+	}
+	inline SCCollectionXIterator<T> operator++(int)
+	{
+		SCCollectionXIterator<T> i = *this;
+		if (++offset >= chunk->count)
+		{
+			if (chunk->nxt)
+			{
+				chunk = chunk->nxt;
+				offset = 0;
+			}
+			else
+			{
+				chunk = 0;
+				offset = SCCollection::nop;
+			}
+		}
+		return i;
+	}
+	inline SCCollectionXIterator<T> operator--(int)
+	{
+		SCCollectionXIterator<T> i = *this;
+		if (offset == 0)
+		{
+			if (chunk->prv)
+			{
+				chunk = chunk->prv;
+				offset = chunk->count - 1;
+			}
+		}
+		else
+			--offset;
+		return i;
+	}
 };
 
 template<typename T>
@@ -66,4 +163,13 @@ public:
 	scsize Size() const { return collection.Size(); }
 	void Clear() { collection.Clear(); }
 	scsize Find(T *e) const	{ return collection.Find({ e }); }
+
+	SCCollectionXIterator<T*> begin()
+	{
+		return SCCollectionXIterator<T>(collection, 0);
+	}
+	SCCollectionXIterator<T*> end()
+	{
+		return SCCollectionXIterator<T>(collection, -1);
+	}
 };
