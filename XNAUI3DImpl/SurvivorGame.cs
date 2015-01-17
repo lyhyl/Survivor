@@ -10,8 +10,9 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using CSSurvivorLibrary;
 
-using SysForm = System.Windows.Forms.Form;
-using SysCtrl = System.Windows.Forms.Control;
+using SysForm = System.Windows.Forms;
+using System.Reflection;
+using System.IO;
 
 namespace XNAUI3DImpl
 {
@@ -20,30 +21,40 @@ namespace XNAUI3DImpl
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        bool worldInitialized = false;
         object UIDataLock = new object();
         IntPtr pUIData = IntPtr.Zero;
         UIDisplayData UIData;
 
-        MouseState prvMouseState;
         KeyboardState prvKeyboardState;
 
         Matrix worldMatrix;
-        Camera camera = new Camera();
-        Matrix projectionMatrix;
+        Camera camera;
 
-        Model box;
+        const float MouseWheelC = 120.0f;
+        const float MouseWheelAdjust = 4f;
+        Cursor cursor;
+
+        SpriteFont DefaultFont;
+
+        Model Box;
+        Model Tree;
 
         public SurvivorGame()
         {
-            SysForm winForm = SysCtrl.FromHandle(Window.Handle) as SysForm;
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            SysForm.Form winForm = SysForm.Control.FromHandle(Window.Handle) as SysForm.Form;
             winForm.Icon = WinResource.SurvivorIcon;
             winForm.Text = "Survivor";
 
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferMultiSampling = true;
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
-            Content.RootDirectory = @"D:\Develop\Survivor\x86\Debug\XNASurvivorContent";
+            int w = SysForm.Screen.PrimaryScreen.Bounds.Width;
+            int h = SysForm.Screen.PrimaryScreen.Bounds.Height;
+            graphics.PreferredBackBufferWidth = w / 2;
+            graphics.PreferredBackBufferHeight = h / 2;
+            Content.RootDirectory = Path.Combine(path, "XNASurvivorContent");
 
             if (Settings.Default.FullScreen)
                 graphics.ToggleFullScreen();
@@ -58,97 +69,106 @@ namespace XNAUI3DImpl
             return 1;
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
+            cursor = new Cursor(GraphicsDevice);
+            cursor.MouseLeftClick += cursor_MouseLeftClick;
+            cursor.MouseWheelChanged += cursor_MouseWheelChanged;
+
+            camera = new Camera(GraphicsDevice);
+
             worldMatrix = Matrix.Identity;
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.ToRadians(45),
-                (float)GraphicsDevice.Viewport.Width /
-                (float)GraphicsDevice.Viewport.Height,
-                0.1f, 10000.0f);
 
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+        void cursor_MouseWheelChanged(EventArgs e)
+        {
+            camera.Distance += cursor.WheelDelta / MouseWheelC * MouseWheelAdjust;
+        }
+
+        void cursor_MouseLeftClick(EventArgs e)
+        {
+            camera.Target = cursor.SelectFloor(camera.ProjectionMatrix, camera.ViewMatrix);
+        }
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            box = Content.Load<Model>("Box");
+            cursor.LoadContent(Content);
+            DefaultFont = Content.Load<SpriteFont>("Font/DefaultFont");
+            Box = Content.Load<Model>("Model/Box");
+            Tree = Content.Load<Model>("Model/Tree");
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             KeyboardState kbs= Keyboard.GetState();
             if (kbs.IsKeyDown(Keys.Escape))
                 this.Exit();
+            if (kbs.IsKeyDown(Keys.F))
+                graphics.ToggleFullScreen();
             prvKeyboardState = kbs;
 
-            MouseState ms = Mouse.GetState();
-            int delta = ms.ScrollWheelValue - prvMouseState.ScrollWheelValue;
-            if (delta != 0)
-                camera.Distance += delta / 120.0f;
-            prvMouseState = ms;
+            cursor.Update(gameTime);
+            camera.Update(gameTime);
 
             lock(UIDataLock)
             {
                 UIData = new UIDisplayData(pUIData);
             }
+            if (!worldInitialized)
+                InitializeWorld();
 
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        private void InitializeWorld()
+        {
+            worldInitialized = true;
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             RasterizerState rs = new RasterizerState();
-            rs.CullMode = CullMode.None;
+            rs.CullMode = CullMode.CullCounterClockwiseFace;
             graphics.GraphicsDevice.RasterizerState = rs;
+            graphics.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            foreach (ModelMesh mesh in box.Meshes)
+            DrawTree();
+
+            string fps = (1000 / (float)gameTime.ElapsedGameTime.TotalMilliseconds).ToString() + "fps";
+            spriteBatch.Begin();
+            spriteBatch.DrawString(DefaultFont, fps, Vector2.Zero, Color.White);
+            cursor.Draw(spriteBatch);
+            spriteBatch.End();
+
+            base.Draw(gameTime);
+        }
+
+        private void DrawTree()
+        {
+            Matrix[] transforms = new Matrix[Tree.Bones.Count];
+            Tree.CopyAbsoluteBoneTransformsTo(transforms);
+            foreach (ModelMesh mesh in Tree.Meshes)
             {
+                Vector3[] color = new Vector3[] { Color.DarkGreen.ToVector3(), Color.SandyBrown.ToVector3() };
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-
-                    //effect.View = viewMatrix;
+                    effect.DiffuseColor = color[mesh.Name == "Leaf" ? 0 : 1];
                     effect.View = camera.ViewMatrix;
-                    effect.Projection = projectionMatrix;
-                    effect.World = worldMatrix;
+                    effect.Projection = camera.ProjectionMatrix;
+                    effect.World = transforms[mesh.ParentBone.Index];
                 }
                 mesh.Draw();
             }
-
-            base.Draw(gameTime);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace XNAUI3DImpl
                 survivorGame.Run();
                 FormThreadExited();
             });
-            formThread.Name = "Survivor C# 3D Impl";
+            formThread.Name = "Survivor XNA 3D Impl";
             formThread.Start();
         }
 

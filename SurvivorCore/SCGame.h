@@ -43,6 +43,7 @@ class SCGame
 	friend void HeroThinkThread(SCGame *game, SCHero *hero, scfloat fairRatio);
 
 	typedef UIAdapter*(__cdecl *GetUIAdapterFunc)(const wchar_t*);
+	typedef const wchar_t**(__cdecl *EnumUIAdapterFunc)(int *);
 	typedef AIAdapter*(__cdecl *GetAIAdapterFunc)(const wchar_t*);
 public:
 	SCGame();
@@ -64,6 +65,7 @@ private:
 	void GetThinkData(AIThinkData *data) const;
 	void ApplyAction();
 
+	EnumUIAdapterFunc enumUIAdpaters;
 	GetUIAdapterFunc getUIAdapter;
 	GetAIAdapterFunc getAIAdapter;
 

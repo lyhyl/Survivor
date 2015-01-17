@@ -53,6 +53,7 @@ SCHero* Competitor::CreateHero()
 SCGame::SCGame()
 {
 	uiSelectorDll = LoadLibrary(L".\\UIAdapterSelector.dll");
+	enumUIAdpaters = (EnumUIAdapterFunc)GetProcAddress(uiSelectorDll, "EnumUIAdapters");
 	getUIAdapter = (GetUIAdapterFunc)GetProcAddress(uiSelectorDll, "CreateUIAdapter");
 	aiSelectorDll = LoadLibrary(L".\\AIAdapterSelector.dll");
 	getAIAdapter = (GetAIAdapterFunc)GetProcAddress(aiSelectorDll, "CreateAIAdapter");
@@ -72,7 +73,10 @@ void SCGame::BeginGame(istream &in)
 
 void SCGame::BeginGame()
 {
-	BeginGame(wstring(L"C#3D"));
+	int count;
+	auto options = enumUIAdpaters(&count);
+	BeginGame(wstring(options[count - 1]));
+	delete options;
 }
 
 void SCGame::BeginGame(wstring &UIOption)
