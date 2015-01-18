@@ -163,19 +163,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SCCollection.cpp" />
-    <ClCompile Include="SCDefines.cpp" />
-    <ClCompile Include="SCMap.cpp" />
+    <ClCompile Include="SDefines.cpp" />
+    <ClCompile Include="SMap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIAdapter.h" />
+    <ClInclude Include="SAIAdapter.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SCCollection.h" />
-    <ClInclude Include="SCDefines.h" />
-    <ClInclude Include="SCMap.h" />
-    <ClInclude Include="SCStructure.h" />
-    <ClInclude Include="SCMath.h" />
-    <ClInclude Include="UIAdapter.h" />
+    <ClInclude Include="SDefines.h" />
+    <ClInclude Include="SMap.h" />
+    <ClInclude Include="SCommunication.h" />
+    <ClInclude Include="SMath.h" />
+    <ClInclude Include="SObject.h" />
+    <ClInclude Include="SUIAdapter.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SurvivorLibrary.rc" />

@@ -1,15 +1,14 @@
 #include <chrono>
 #include <future>
-#include "SCMap.h"
 #include "SCGame.h"
 
 using namespace std;
 using namespace std::chrono;
 
-const scfloat HeroProperty::MoveSpeed = .5;
-const scfloat HeroProperty::RunSpeed = .9;
-const scfloat HeroProperty::MinTurnAngle = -1.57079632679489661923;
-const scfloat HeroProperty::MaxTurnAngle = 1.57079632679489661923;
+const sfloat HeroProperty::MoveSpeed = .5;
+const sfloat HeroProperty::RunSpeed = .9;
+const sfloat HeroProperty::MinTurnAngle = -1.57079632679489661923;
+const sfloat HeroProperty::MaxTurnAngle = 1.57079632679489661923;
 
 wstring GetExePath()
 {
@@ -20,15 +19,15 @@ wstring GetExePath()
 	return path.substr(0, pos);
 }
 
-void HeroThinkThread(SCGame *game, SCHero *hero, scfloat fairRatio)
+void HeroThinkThread(SCGame *game, SHero *hero, sfloat fairRatio)
 {
 	while (game->running)
 	{
-		AIThinkData data;
+		SAIThinkData data;
 		data.target = hero;
 		game->GetThinkData(&data);
 		auto begin = steady_clock::now();
-		SCHeroAction action = hero->ai->Think(&data);
+		SHeroAction action = hero->ai->Think(&data);
 		auto end = steady_clock::now();
 		long long d = (long long)(fairRatio * (begin - end).count());
 		this_thread::sleep_for(milliseconds(max(10, d)));
@@ -40,12 +39,20 @@ void HeroThinkThread(SCGame *game, SCHero *hero, scfloat fairRatio)
 
 int Competitor::HeroID = 0;
 
-Competitor::Competitor(SCGame *g, AIAdapter *a, scfloat fr) :ai(a), game(g), fairRatio(fr){}
+Competitor::Competitor(SCGame *g, SAIAdapter *a, sfloat fr) :ai(a), game(g), fairRatio(fr){}
 
-SCHero* Competitor::CreateHero()
+SHero* Competitor::CreateHero()
 {
-	SCHero *hero = new SCHero{ HeroID++, 100, 10, { 2560, 2560 }, { 1, 0 },
-		SCHeroActionType::Stay, system_clock::to_time_t(steady_clock::now()), ai };
+	SHero *hero = new SHero;
+	hero->id = HeroID++;
+	hero->position = { 2560, 2560 };
+	hero->type = 0;
+	hero->hp = 100;
+	hero->energy = 10;
+	hero->direction = { 1, 0 };
+	hero->state = SHeroState::Stay;
+	hero->prvTime = system_clock::to_time_t(steady_clock::now());
+	hero->ai = ai;
 	hero->aiThread = new thread(HeroThinkThread, game, hero, fairRatio);
 	return hero;
 }
@@ -108,30 +115,29 @@ void SCGame::BeginGame(wstring &UIOption)
 	}
 
 	for (auto com : Competitors)
-		Heroes.Add(com->CreateHero());
+		Heroes.emplace_back(com->CreateHero());
 }
 
 void SCGame::Present()
 {
-	UIDisplayData data;
-	data.map = &Map;
-	data.heroes = (SCCollection*)&Heroes;
-	uiState = uiAdapter->Display(&data);
+	SUIDisplayData *data = new SUIDisplayData;
+	//data->map = Map;
+	uiState = uiAdapter->Display(data);
 }
 
-void SCGame::GetThinkData(AIThinkData *data) const
+void SCGame::GetThinkData(SAIThinkData *data) const
 {
-	const SCHero *hero = data->target;
+	const SHero *hero = data->target;
 	data->vision = nullptr;
 }
 
-inline void TurnDirection(SCVector2 &v, scfloat a)
+inline void TurnDirection(SVector2 &v, sfloat a)
 {
-	SCRotate(v, max(min(a, HeroProperty::MaxTurnAngle), HeroProperty::MinTurnAngle));
-	SCNormalize(v);
+	SRotate(v, max(min(a, HeroProperty::MaxTurnAngle), HeroProperty::MinTurnAngle));
+	SNormalize(v);
 }
 
-inline void MoveDirection(SCVector2 &v, SCVector2 &d, scfloat speed)
+inline void MoveDirection(SVector2 &v, SVector2 &d, sfloat speed)
 {
 	v += d * speed;
 }
@@ -146,20 +152,20 @@ void SCGame::ApplyAction()
 
 		switch (p.second.type)
 		{
-		case SCHeroActionType::Move:
+		case SHeroState::Move:
 			TurnDirection(p.first->direction, p.second.angle);
 			MoveDirection(p.first->position, p.first->direction, HeroProperty::MoveSpeed);
 			break;
-		case SCHeroActionType::Run:
+		case SHeroState::Run:
 			TurnDirection(p.first->direction, p.second.angle);
 			MoveDirection(p.first->position, p.first->direction, HeroProperty::RunSpeed);
 			break;
-		case SCHeroActionType::Turn:
+		case SHeroState::Turn:
 			TurnDirection(p.first->direction, p.second.angle);
 			break;
-		case SCHeroActionType::Attack:
+		case SHeroState::Attack:
 			break;
-		case SCHeroActionType::Climb:
+		case SHeroState::Climb:
 			break;
 		default:break;
 		}
@@ -180,10 +186,10 @@ void SCGame::EndGame()
 {
 	// stop all thread
 	running = false;
-	scsize HeroesSize = Heroes.Size();
-	for (scsize i = 0; i < HeroesSize; i++)
+	size_t HeroesSize = Heroes.size();
+	for (size_t i = 0; i < HeroesSize; i++)
 	{
-		SCHero *hero = Heroes[i];
+		SHero *hero = Heroes[i];
 		if (hero->aiThread)
 		{
 			thread* t = (thread*)hero->aiThread;
@@ -194,7 +200,7 @@ void SCGame::EndGame()
 	// generate statistics
 
 	// clear up
-	Heroes.Clear();
+	Heroes.clear();
 	for (auto com : Competitors)
 		delete com;
 	Competitors.clear();

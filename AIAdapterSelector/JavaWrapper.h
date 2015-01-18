@@ -2,7 +2,9 @@
 #pragma unmanaged
 #include <jni.h>
 #include <Windows.h>
-#include "AIAdapter.h"
+#include "SAIAdapter.h"
+
+using namespace SurvivorLibrary;
 
 static char JavaVMOptionBuffer[MAX_PATH + 100] = "-Djava.class.path=.;";
 static bool JavaInitialized = false;
@@ -51,7 +53,7 @@ void InitJavaVM()
 	JavaInitialized = true;
 }
 
-class JavaImplWrapper :AIAdapter
+class JavaImplWrapper :SAIAdapter
 {
 private:
 	jobject jAdapter = nullptr;
@@ -83,7 +85,7 @@ public:
 			jvm = nullptr;
 		}
 	}
-	virtual SCHeroAction Think(const AIThinkData *data)
+	virtual SHeroAction Think(const SAIThinkData *data)
 	{
 		JNIEnv *threadEnv = nullptr;
 		jvm->AttachCurrentThread((void**)&threadEnv, options);

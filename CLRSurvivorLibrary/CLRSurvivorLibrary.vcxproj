@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C2B18ED9-7C3C-4D3A-B442-364D3629EC10}</ProjectGuid>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProjectGuid>{005BB23D-3F30-488D-808B-EBC4AF311C25}</ProjectGuid>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>AIAdapterSelector</RootNamespace>
+    <RootNamespace>CLRSurvivorLibrary</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,31 +71,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\include\win32;C:\Program Files %28x86%29\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
-    <ExecutablePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
+    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_25\include\win32;C:\Program Files\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
-    <ExecutablePath>C:\Program Files\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
+    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\include\win32;C:\Program Files %28x86%29\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
-    <ExecutablePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
+    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_25\include\win32;C:\Program Files\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
-    <ExecutablePath>C:\Program Files\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
+    <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -106,26 +102,21 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
-      <NoEntryPoint>true</NoEntryPoint>
+      <AdditionalDependencies />
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN64;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
-      <NoEntryPoint>true</NoEntryPoint>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Link>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,19 +126,19 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
-      <NoEntryPoint>true</NoEntryPoint>
+      <AdditionalDependencies />
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN64;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
-      <NoEntryPoint>true</NoEntryPoint>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -156,16 +147,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIAdapterSelector.h" />
-    <ClInclude Include="CWrapper.h" />
-    <ClInclude Include="JavaWrapper.h" />
+    <ClInclude Include="CLRSurvivorLibrary.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
-    <ClInclude Include="Wrapper.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AIAdapterSelector.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="CLRSurvivorLibrary.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -181,6 +169,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SurvivorLibrary\SurvivorLibrary.vcxproj">
+      <Project>{489a6826-ce66-4be4-aac1-c755f2eb237c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

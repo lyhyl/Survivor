@@ -1,12 +1,14 @@
 #pragma once
 #include <Windows.h>
-#include "AIAdapter.h"
+#include "SAIAdapter.h"
 
-class CImplWrapper :AIAdapter
+using namespace SurvivorLibrary;
+
+class CImplWrapper :SAIAdapter
 {
 private:
-	typedef AIAdapter*(*pNewAdapter)();
-	AIAdapter *pAI = nullptr;
+	typedef SAIAdapter*(*pNewAdapter)();
+	SAIAdapter *pAI = nullptr;
 	HMODULE hDLL;
 public:
 	CImplWrapper(wstring &file)
@@ -32,7 +34,7 @@ public:
 		if (hDLL)
 			FreeLibrary(hDLL);
 	}
-	virtual SCHeroAction Think(const AIThinkData *data)
+	virtual SHeroAction Think(const SAIThinkData *data)
 	{
 		return pAI ? pAI->Think(data) : NoAction;
 	}

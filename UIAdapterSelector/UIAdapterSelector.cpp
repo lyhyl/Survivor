@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 #include "UIAdapterSelector.h"
-#include "UIAdapterWapper.h"
+#include "UIAdapterWrapper.h"
 
 using namespace System;
 using namespace System::IO;
@@ -14,7 +14,7 @@ using namespace System::Runtime::InteropServices;
 static bool Initialized = false;
 
 static gcroot<Assembly^> CSharpAssembly;
-static CSharpImplWapper *_CSharpImpl;
+static CSharpImplWrapper *_CSharpImpl;
 
 static HMODULE *_CImpl;
 
@@ -34,7 +34,7 @@ void InitializeCSharp(String ^assName)
 	CSharpAssembly = Assembly::LoadFile(assPath);
 	Object ^instance = CSharpAssembly->CreateInstance(csClassName);
 	MethodInfo ^method = CSharpAssembly->GetType(csClassName)->GetMethod("Display");
-	_CSharpImpl = new CSharpImplWapper(instance, method);
+	_CSharpImpl = new CSharpImplWrapper(instance, method);
 	Initialized = true;
 }
 

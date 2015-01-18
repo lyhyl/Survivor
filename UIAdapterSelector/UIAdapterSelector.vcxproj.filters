@@ -24,7 +24,7 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIAdapterWapper.h">
+    <ClInclude Include="UIAdapterWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

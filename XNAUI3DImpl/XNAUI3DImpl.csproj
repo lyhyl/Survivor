@@ -10,7 +10,8 @@
     <RootNamespace>XNAUI3DImpl</RootNamespace>
     <AssemblyName>XNAUI3DImpl</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaProfile>HiDef</XnaProfile>
@@ -84,9 +85,9 @@
     <Compile Include="UIAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSSurvivorLibrary\CSSurvivorLibrary.csproj">
-      <Project>{4d5c6666-80d0-428a-91c0-966e47c02e16}</Project>
-      <Name>CSSurvivorLibrary</Name>
+    <ProjectReference Include="..\CLRSurvivorLibrary\CLRSurvivorLibrary.vcxproj">
+      <Project>{005bb23d-3f30-488d-808b-ebc4af311c25}</Project>
+      <Name>CLRSurvivorLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\XNASurvivorContent\XNASurvivorContent.contentproj">
       <Project>{3E115576-083E-491C-80D9-9866DA1EE110}</Project>

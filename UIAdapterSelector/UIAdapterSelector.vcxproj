@@ -73,25 +73,25 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorCore;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorCore;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorCore;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorCore;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,7 +158,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="UIAdapterSelector.h" />
-    <ClInclude Include="UIAdapterWapper.h" />
+    <ClInclude Include="UIAdapterWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />

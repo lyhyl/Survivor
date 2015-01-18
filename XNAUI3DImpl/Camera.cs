@@ -45,7 +45,7 @@ namespace XNAUI3DImpl
 
             currentTarget = Target = Vector3.Zero;
             Distance = 100;
-            Angle = 45;
+            Angle = 30;
 
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.ToRadians(90),

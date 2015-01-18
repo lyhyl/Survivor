@@ -6,7 +6,6 @@ Programming Game
 
 UI Impl
 ========
-C#
 XNA
 
 

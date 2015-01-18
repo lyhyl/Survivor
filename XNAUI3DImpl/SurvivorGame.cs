@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using CLRSurvivorLibrary;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -8,11 +6,12 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using CSSurvivorLibrary;
-
-using SysForm = System.Windows.Forms;
-using System.Reflection;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using SysForm = System.Windows.Forms;
 
 namespace XNAUI3DImpl
 {
@@ -24,7 +23,7 @@ namespace XNAUI3DImpl
         bool worldInitialized = false;
         object UIDataLock = new object();
         IntPtr pUIData = IntPtr.Zero;
-        UIDisplayData UIData;
+        CSUIDisplayData UIData;
 
         KeyboardState prvKeyboardState;
 
@@ -52,8 +51,11 @@ namespace XNAUI3DImpl
             graphics.PreferMultiSampling = true;
             int w = SysForm.Screen.PrimaryScreen.Bounds.Width;
             int h = SysForm.Screen.PrimaryScreen.Bounds.Height;
+            /*float ratio = (float)w / h;
+            foreach (var mode in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes) ;*/
             graphics.PreferredBackBufferWidth = w / 2;
             graphics.PreferredBackBufferHeight = h / 2;
+
             Content.RootDirectory = Path.Combine(path, "XNASurvivorContent");
 
             if (Settings.Default.FullScreen)
@@ -119,7 +121,7 @@ namespace XNAUI3DImpl
 
             lock(UIDataLock)
             {
-                UIData = new UIDisplayData(pUIData);
+                UIData = new CSUIDisplayData(pUIData);
             }
             if (!worldInitialized)
                 InitializeWorld();
@@ -141,19 +143,71 @@ namespace XNAUI3DImpl
             graphics.GraphicsDevice.RasterizerState = rs;
             graphics.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            DrawTree();
+            DrawUIData();
 
-            string fps = (1000 / (float)gameTime.ElapsedGameTime.TotalMilliseconds).ToString() + "fps";
+            double fps = 1000 / (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            string sfps = double.IsInfinity(fps) ? "inf" : fps.ToString() + "fps";
             spriteBatch.Begin();
-            spriteBatch.DrawString(DefaultFont, fps, Vector2.Zero, Color.White);
+            spriteBatch.DrawString(DefaultFont, sfps, Vector2.Zero, Color.White);
             cursor.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private void DrawTree()
+        private void DrawUIData()
         {
+            foreach (var res in UIData.Map.StillObjects)
+            {
+                /*switch (res.type)
+                {
+                    case SCMapResourceType.Hero:
+                        break;
+                    case SCMapResourceType.WildAnimal:
+                        break;
+                    case SCMapResourceType.Blood:
+                        break;
+                    case SCMapResourceType.Excrement:
+                        break;
+                    case SCMapResourceType.Body:
+                        break;
+                    case SCMapResourceType.Tree: DrawTree(res.region); break;
+                    case SCMapResourceType.Charcoal:
+                        break;
+                    case SCMapResourceType.Rock:
+                        break;
+                    case SCMapResourceType.Hill:
+                        break;
+                    case SCMapResourceType.Water:
+                        break;
+                    case SCMapResourceType.Stream:
+                        break;
+                    case SCMapResourceType.Lake:
+                        break;
+                    case SCMapResourceType.Hole:
+                        break;
+                    case SCMapResourceType.Fire:
+                        break;
+                    case SCMapResourceType.Smoke:
+                        break;
+                    case SCMapResourceType.Fog:
+                        break;
+                    case SCMapResourceType.Rain:
+                        break;
+                    case SCMapResourceType.Thunder:
+                        break;
+                    case SCMapResourceType.TypeCount:
+                        break;
+                    default:
+                        break;
+                }*/
+            }
+        }
+
+        /*private void DrawTree(_SCRegion region)
+        {
+            _SCPoint pos = (_SCPoint)System.Runtime.InteropServices.Marshal.PtrToStructure(region.verties, typeof(_SCPoint));
+
             Matrix[] transforms = new Matrix[Tree.Bones.Count];
             Tree.CopyAbsoluteBoneTransformsTo(transforms);
             foreach (ModelMesh mesh in Tree.Meshes)
@@ -162,13 +216,20 @@ namespace XNAUI3DImpl
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
+
+                    effect.FogEnabled = true;
+                    effect.FogStart = 100;
+                    effect.FogEnd = 500;
+                    effect.FogColor = Color.CornflowerBlue.ToVector3();
+
                     effect.DiffuseColor = color[mesh.Name == "Leaf" ? 0 : 1];
+                    // TODO Optimize it
                     effect.View = camera.ViewMatrix;
                     effect.Projection = camera.ProjectionMatrix;
-                    effect.World = transforms[mesh.ParentBone.Index];
+                    effect.World = transforms[mesh.ParentBone.Index] * Matrix.CreateTranslation(new Vector3((float)pos.x, 0, (float)pos.y));
                 }
                 mesh.Draw();
             }
-        }
+        }*/
     }
 }
