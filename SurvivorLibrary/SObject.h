@@ -3,10 +3,16 @@
 
 namespace SurvivorLibrary
 {
-	struct API SObject
+	class API SObject
 	{
-		sint id;
-		SPoint position;
+		static ssize UniversalID;
+		ssize id;
+	public:
+		SObject();
+		static void ResetIDCounter();
+		ssize ID();
+
+		SVector2 position;
 	};
 
 	enum class API SHeroState :int
@@ -19,8 +25,9 @@ namespace SurvivorLibrary
 		Climb
 	};
 
-	struct API SHero :SObject
+	class API SHero :public SObject
 	{
+	public:
 		sint type;
 
 		sint hp;
@@ -34,9 +41,9 @@ namespace SurvivorLibrary
 		void *aiThread;
 	};
 
-	struct API SAnimal :SObject
+	class API SAnimal :public SObject
 	{
-
+	public:
 	};
 
 	enum class API SStillObjectType :int
@@ -58,8 +65,9 @@ namespace SurvivorLibrary
 		TypeCount
 	};
 
-	struct API SStillObject :SObject
+	class API SStillObject :public SObject
 	{
+	public:
 		SStillObjectType type;
 	};
 }

@@ -9,6 +9,7 @@ namespace SurvivorLibrary
 	public:
 		SUIAdapter(){}
 		virtual ~SUIAdapter(){}
-		virtual __int32 Display(struct SUIDisplayData*) = 0;
+		virtual __int32 Initialize(struct SInitializeData*) = 0;
+		virtual __int32 Update(struct SUpdateData*) = 0;
 	};
 }

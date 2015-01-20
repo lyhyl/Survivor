@@ -11,16 +11,23 @@ class CSharpImplWrapper :SUIAdapter
 {
 private:
 	gcroot<Object ^> object;
-	gcroot<MethodInfo^> displayFunction;
+	gcroot<MethodInfo^> initializeFunction;
+	gcroot<MethodInfo^> updateFunction;
 public:
-	CSharpImplWrapper(Object ^obj, MethodInfo ^displayfunc)
+	CSharpImplWrapper(Object ^obj, MethodInfo ^initfunc, MethodInfo ^updfunc)
 	{
 		object = obj;
-		displayFunction = displayfunc;
+		initializeFunction = initfunc;
+		updateFunction = updfunc;
 	}
-	virtual int Display(SUIDisplayData* data)
+	virtual __int32 Initialize(SInitializeData* pmap)
 	{
-		auto arg = gcnew array < Object^ > { IntPtr(data) };
-		return Convert::ToInt32(displayFunction->Invoke(object, arg));
+		auto arg = gcnew array < Object^ > { IntPtr(pmap) };
+		return Convert::ToInt32(initializeFunction->Invoke(object, arg));
+	}
+	virtual __int32 Update(SUpdateData* pupdd)
+	{
+		auto arg = gcnew array < Object^ > { IntPtr(pupdd) };
+		return Convert::ToInt32(updateFunction->Invoke(object, arg));
 	}
 };

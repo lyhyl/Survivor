@@ -1,10 +1,5 @@
 #include <Windows.h>
-#include <string>
 #include "SCGame.h"
-
-using namespace std;
-
-SCGame *game;
 
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
@@ -13,14 +8,12 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
-	game = new SCGame();
+	SCGame game;
 	
-	game->BeginGame();
-	while (game->Run())
-		game->Present();
-	game->EndGame();
-
-	delete game;
+	game.BeginGame();
+	while (game.Run())
+		game.Present();
+	game.EndGame();
 
 	return 0;
 }

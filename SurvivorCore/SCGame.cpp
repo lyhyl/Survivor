@@ -7,8 +7,8 @@ using namespace std::chrono;
 
 const sfloat HeroProperty::MoveSpeed = .5;
 const sfloat HeroProperty::RunSpeed = .9;
-const sfloat HeroProperty::MinTurnAngle = -1.57079632679489661923;
-const sfloat HeroProperty::MaxTurnAngle = 1.57079632679489661923;
+const sfloat HeroProperty::MinTurnAngle = -.1;
+const sfloat HeroProperty::MaxTurnAngle = .1;
 
 wstring GetExePath()
 {
@@ -37,15 +37,12 @@ void HeroThinkThread(SCGame *game, SHero *hero, sfloat fairRatio)
 	}
 }
 
-int Competitor::HeroID = 0;
-
-Competitor::Competitor(SCGame *g, SAIAdapter *a, sfloat fr) :ai(a), game(g), fairRatio(fr){}
+Competitor::Competitor(SCGame *g, SAIAdapter *a, sfloat fr) :ai(a), game(g), fairRatio(fr) { }
 
 SHero* Competitor::CreateHero()
 {
 	SHero *hero = new SHero;
-	hero->id = HeroID++;
-	hero->position = { 2560, 2560 };
+	hero->position = { 0, 0 };
 	hero->type = 0;
 	hero->hp = 100;
 	hero->energy = 10;
@@ -68,6 +65,7 @@ SCGame::SCGame()
 
 SCGame::~SCGame()
 {
+	delete map;
 	delete uiAdapter;
 	FreeLibrary(uiSelectorDll);
 	FreeLibrary(aiSelectorDll);
@@ -80,6 +78,7 @@ void SCGame::BeginGame(istream &in)
 
 void SCGame::BeginGame()
 {
+	// TODO
 	int count;
 	auto options = enumUIAdpaters(&count);
 	BeginGame(wstring(options[count - 1]));
@@ -89,10 +88,9 @@ void SCGame::BeginGame()
 void SCGame::BeginGame(wstring &UIOption)
 {
 	uiOption = UIOption;
-
 	uiAdapter = getUIAdapter(uiOption.c_str());
-	wstring aiFolder = GetExePath() + L"\\" + GetHeroesDirW() + L"\\";
 
+	wstring aiFolder = GetExePath() + L"\\" + GetHeroesDirW() + L"\\";
 	if (CreateDirectory(aiFolder.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
 	{
 		WIN32_FIND_DATA fd;
@@ -114,21 +112,37 @@ void SCGame::BeginGame(wstring &UIOption)
 		// Wait for AIs
 	}
 
+	SObject::ResetIDCounter();
+
+	map = new SMap();
+
 	for (auto com : Competitors)
 		Heroes.emplace_back(com->CreateHero());
+
+	SInitializeData data{ map, Heroes };
+	if (uiAdapter->Initialize(&data) != (int)SGState::OK)
+	{
+		// TODO
+		MessageBox(0, L"UI Adapter Initialize Fault", L"Error", 0);
+	}
 }
 
 void SCGame::Present()
 {
-	SUIDisplayData *data = new SUIDisplayData;
-	//data->map = Map;
-	uiState = uiAdapter->Display(data);
+	/*Skip Empty Data*/
+	if (UpdatedHeroes.size() || UpdatedStillObjects.size() || UpdatedAnimals.size())
+	{
+		SUpdateData data{ UpdatedHeroes, UpdatedStillObjects, UpdatedAnimals };
+		uiState = uiAdapter->Update(&data);
+	}
 }
 
 void SCGame::GetThinkData(SAIThinkData *data) const
 {
 	const SHero *hero = data->target;
 	data->vision = nullptr;
+	data->hearing = nullptr;
+	data->touch = nullptr;
 }
 
 inline void TurnDirection(SVector2 &v, sfloat a)
@@ -144,6 +158,10 @@ inline void MoveDirection(SVector2 &v, SVector2 &d, sfloat speed)
 
 void SCGame::ApplyAction()
 {
+	UpdatedHeroes.clear();
+	UpdatedStillObjects.clear();
+	UpdatedAnimals.clear();
+
 	for (auto p : actionLogApplying)
 	{
 		__time64_t now = system_clock::to_time_t(steady_clock::now());
@@ -169,6 +187,8 @@ void SCGame::ApplyAction()
 			break;
 		default:break;
 		}
+
+		UpdatedHeroes.push_back(p.first);
 	}
 }
 
@@ -179,7 +199,9 @@ bool SCGame::Run()
 	writeMtx.unlock();
 	ApplyAction();
 	actionLogApplying.clear();
-	return uiState == 1;
+	if (uiState == (int)SGState::UITooManyUpdateData)
+		MessageBox(0, L"Too Many UDD", L"", 0);
+	return uiState == (int)SGState::OK;
 }
 
 void SCGame::EndGame()
@@ -197,7 +219,9 @@ void SCGame::EndGame()
 			delete t;
 		}
 	}
+
 	// generate statistics
+	// TODO
 
 	// clear up
 	Heroes.clear();

@@ -21,6 +21,9 @@
     <ClCompile Include="SMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

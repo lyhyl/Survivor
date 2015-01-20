@@ -19,6 +19,8 @@ namespace XNAUI3DImpl
         }
         public Vector3 Target { set; get; }
         private Vector3 currentTarget;
+        public Vector3 CurrentTarget
+        { get { return currentTarget; } }
         private float _distance;
         public float Distance
         {
@@ -44,11 +46,11 @@ namespace XNAUI3DImpl
             device = d;
 
             currentTarget = Target = Vector3.Zero;
-            Distance = 100;
-            Angle = 30;
+            Distance = 200;
+            Angle = 15;
 
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(
-                MathHelper.ToRadians(90),
+                MathHelper.ToRadians(45),
                 (float)device.Viewport.Width / (float)device.Viewport.Height,
                 0.1f, 10000.0f);
         }

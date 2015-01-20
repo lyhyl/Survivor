@@ -1,78 +1,34 @@
 #pragma once
 
+#include <vector>
 #include <cliext\vector>
-
-#include <SAIAdapter.h>
-#include <SCommunication.h>
-#include <SDefines.h>
-#include <SMap.h>
-#include <SMath.h>
-#include <SObject.h>
-#include <SUIAdapter.h>
 
 using namespace cliext;
 using namespace System;
 using namespace System::Collections::Generic;
-using namespace SurvivorLibrary;
 
 namespace CLRSurvivorLibrary
 {
-	public value struct CSPoint
+	ref class CSMarshal
 	{
-		sfloat x, y;
-	};
-
-	public ref struct CSObject
-	{
-		sint id;
-		CSPoint position;
-	};
-
-	public ref struct CSHero :CSObject
-	{
-
-	};
-
-	public ref struct CSStillObject :CSObject
-	{
-
-	};
-
-	public ref class CSMap
-	{
-		const SMap *unmptr = nullptr;
-	public:
-		CSMap(IntPtr p) { unmptr = static_cast<const SMap*> (p.ToPointer()); }
-
-		property ssize Width { ssize get() { return unmptr->DefaultSize; } }
-		property ssize Height { ssize get() { return unmptr->DefaultSize; } }
-
-		property ICollection<CSStillObject^>^ StillObjects
+	internal:
+		template <typename T, typename U>
+		static cliext::vector<T^>^ Vector(const std::vector<U> &v)
 		{
-			ICollection<CSStillObject^>^ get() { return gcnew vector<CSStillObject^>(); }
+			cliext::vector<T^>^ cv = gcnew vector<T^>();
+			cv->reserve(v.size());
+			for each (U &u in v)
+				cv->push_back(gcnew T(u));
+			return cv;
 		}
-
-	internal:
-		CSMap(const SMap *p) { unmptr = p; }
-
-	private:
-		~CSMap() { this->!CSMap(); }
-		!CSMap()	{ delete unmptr; }
-	};
-
-	public ref struct CSUIDisplayData
-	{
-		const SUIDisplayData *unmptr = nullptr;
-	public:
-		CSUIDisplayData(IntPtr p) { unmptr = static_cast<const SUIDisplayData*> (p.ToPointer()); }
-
-		property CSMap^ Map { CSMap^ get() { return gcnew CSMap(unmptr->map); } }
-
-	internal:
-		CSUIDisplayData(const SUIDisplayData *p) { unmptr = p; }
-
-	private:
-		~CSUIDisplayData() { this->!CSUIDisplayData(); }
-		!CSUIDisplayData()	{ delete unmptr; }
+		template <typename T, typename U>
+		static cliext::vector<T^>^ Vector(const std::vector<U*> &v)
+		{
+			cliext::vector<T^>^ cv = gcnew vector<T^>();
+			cv->reserve(v.size());
+			for each (U *u in v)
+				cv->push_back(gcnew T(u));
+			return cv;
+		}
 	};
 }

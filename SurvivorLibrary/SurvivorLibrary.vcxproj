@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="SDefines.cpp" />
     <ClCompile Include="SMap.cpp" />
+    <ClCompile Include="SObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SAIAdapter.h" />

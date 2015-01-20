@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "SObject.h"
 #include "SMap.h"
 
@@ -32,9 +33,20 @@ namespace SurvivorLibrary
 
 	const SHeroAction API NoAction = { SHeroState::Stay, 0 };
 
-	struct API SUIDisplayData
+	template class API std::vector < SHero* > ;
+	template class API std::vector < SStillObject* > ;
+	template class API std::vector < SAnimal* > ;
+	struct API SUpdateData
 	{
-		const SMap * map = nullptr;
+		std::vector<SHero*> &heroes;
+		std::vector<SStillObject*> &stillObjects;
+		std::vector<SAnimal*> &animals;
+	};
+
+	struct API SInitializeData
+	{
+		SMap *map;
+		std::vector<SHero*> &heroes;
 	};
 
 	struct API SAIThinkData

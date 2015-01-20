@@ -28,6 +28,11 @@
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
+    <Compile Include="Audio\SurvivorAudio.xap">
+      <Name>SurvivorAudio</Name>
+      <Importer>XactImporter</Importer>
+      <Processor>XactProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Tree.FBX">
@@ -37,8 +42,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Music\" />
-    <Folder Include="Sound\" />
+    <Compile Include="Model\Hero000.FBX">
+      <Name>Hero000</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Element\Cursor.png">

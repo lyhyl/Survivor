@@ -1,0 +1,329 @@
+Signature = XACT3;
+Version = 18;
+Content Version = 46;
+Release = February 2010;
+
+Options
+{
+    Verbose Report = 0;
+    Generate C/C++ Headers = 1;
+}
+
+Global Settings
+{
+    Xbox File = Xbox\SurvivorAudio.xgs;
+    Windows File = Win\SurvivorAudio.xgs;
+    Header File = SurvivorAudio.h;
+    Exclude Category Names = 0;
+    Exclude Variable Names = 0;
+    Last Modified Low = 2855757655;
+    Last Modified High = 30422015;
+
+    Category
+    {
+        Name = Global;
+        Public = 1;
+        Background Music = 0;
+        Volume = 0;
+
+        Category Entry
+        {
+        }
+
+        Instance Limit
+        {
+            Max Instances = 255;
+            Behavior = 0;
+
+            Crossfade
+            {
+                Fade In = 0;
+                Fade Out = 0;
+                Crossfade Type = 0;
+            }
+        }
+    }
+
+    Category
+    {
+        Name = Default;
+        Public = 1;
+        Background Music = 0;
+        Volume = 0;
+
+        Category Entry
+        {
+            Name = Global;
+        }
+
+        Instance Limit
+        {
+            Max Instances = 255;
+            Behavior = 0;
+
+            Crossfade
+            {
+                Fade In = 0;
+                Fade Out = 0;
+                Crossfade Type = 0;
+            }
+        }
+    }
+
+    Category
+    {
+        Name = Music;
+        Public = 1;
+        Background Music = 1;
+        Volume = 0;
+
+        Category Entry
+        {
+            Name = Global;
+        }
+
+        Instance Limit
+        {
+            Max Instances = 255;
+            Behavior = 0;
+
+            Crossfade
+            {
+                Fade In = 0;
+                Fade Out = 0;
+                Crossfade Type = 0;
+            }
+        }
+    }
+
+    Variable
+    {
+        Name = OrientationAngle;
+        Public = 1;
+        Global = 0;
+        Internal = 0;
+        External = 0;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 0;
+        Time = 0;
+        Value = 0.000000;
+        Initial Value = 0.000000;
+        Min = -180.000000;
+        Max = 180.000000;
+    }
+
+    Variable
+    {
+        Name = DopplerPitchScalar;
+        Public = 1;
+        Global = 0;
+        Internal = 0;
+        External = 0;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 0;
+        Time = 0;
+        Value = 1.000000;
+        Initial Value = 1.000000;
+        Min = 0.000000;
+        Max = 4.000000;
+    }
+
+    Variable
+    {
+        Name = SpeedOfSound;
+        Public = 1;
+        Global = 1;
+        Internal = 0;
+        External = 0;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 0;
+        Time = 0;
+        Value = 343.500000;
+        Initial Value = 343.500000;
+        Min = 0.000000;
+        Max = 1000000.000000;
+    }
+
+    Variable
+    {
+        Name = ReleaseTime;
+        Public = 1;
+        Global = 0;
+        Internal = 1;
+        External = 1;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 1;
+        Time = 1;
+        Value = 0.000000;
+        Initial Value = 0.000000;
+        Min = 0.000000;
+        Max = 15000.000000;
+    }
+
+    Variable
+    {
+        Name = AttackTime;
+        Public = 1;
+        Global = 0;
+        Internal = 1;
+        External = 1;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 1;
+        Time = 1;
+        Value = 0.000000;
+        Initial Value = 0.000000;
+        Min = 0.000000;
+        Max = 15000.000000;
+    }
+
+    Variable
+    {
+        Name = NumCueInstances;
+        Public = 1;
+        Global = 0;
+        Internal = 1;
+        External = 1;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 1;
+        Time = 0;
+        Value = 0.000000;
+        Initial Value = 0.000000;
+        Min = 0.000000;
+        Max = 1024.000000;
+    }
+
+    Variable
+    {
+        Name = Distance;
+        Public = 1;
+        Global = 0;
+        Internal = 0;
+        External = 0;
+        Monitored = 1;
+        Reserved = 1;
+        Read Only = 0;
+        Time = 0;
+        Value = 0.000000;
+        Initial Value = 0.000000;
+        Min = 0.000000;
+        Max = 1000000.000000;
+    }
+}
+
+Wave Bank
+{
+    Name = SurvivorAudio;
+    Xbox File = Xbox\SurvivorAudio.xwb;
+    Windows File = Win\SurvivorAudio.xwb;
+    Xbox Bank Path Edited = 0;
+    Windows Bank Path Edited = 0;
+    Seek Tables = 1;
+    Compression Preset Name = <none>;
+    Bank Last Revised Low = 4013044549;
+    Bank Last Revised High = 30422015;
+
+    Wave
+    {
+        Name = YouWin;
+        File = YouWin.wav;
+        Build Settings Last Modified Low = 1642081552;
+        Build Settings Last Modified High = 30422015;
+
+        Cache
+        {
+            Format Tag = 0;
+            Channels = 2;
+            Sampling Rate = 48000;
+            Bits Per Sample = 1;
+            Play Region Offset = 44;
+            Play Region Length = 20563588;
+            Loop Region Offset = 0;
+            Loop Region Length = 0;
+            File Type = 1;
+            Last Modified Low = 3766435498;
+            Last Modified High = 30422013;
+        }
+    }
+}
+
+Sound Bank
+{
+    Name = SurvivorAudio;
+    Xbox File = Xbox\SurvivorAudio.xsb;
+    Windows File = Win\SurvivorAudio.xsb;
+    Xbox Bank Path Edited = 0;
+    Windows Bank Path Edited = 0;
+
+    Sound
+    {
+        Name = YouWin;
+        Volume = -1200;
+        Pitch = 0;
+        Priority = 0;
+
+        Category Entry
+        {
+            Name = Music;
+        }
+
+        Track
+        {
+            Volume = 0;
+            Use Filter = 0;
+
+            Play Wave Event
+            {
+                Break Loop = 0;
+                Use Speaker Position = 0;
+                Use Center Speaker = 1;
+                New Speaker Position On Loop = 1;
+                Speaker Position Angle = 0.000000;
+                Speaker Position Arc = 0.000000;
+
+                Event Header
+                {
+                    Timestamp = 0;
+                    Relative = 0;
+                    Random Recurrence = 0;
+                    Random Offset = 0;
+                }
+
+                Wave Entry
+                {
+                    Bank Name = SurvivorAudio;
+                    Bank Index = 0;
+                    Entry Name = YouWin;
+                    Entry Index = 0;
+                    Weight = 255;
+                    Weight Min = 0;
+                }
+            }
+        }
+    }
+
+    Cue
+    {
+        Name = YouWin;
+
+        Variation
+        {
+            Variation Type = 3;
+            Variation Table Type = 1;
+            New Variation on Loop = 0;
+        }
+
+        Sound Entry
+        {
+            Name = YouWin;
+            Index = 0;
+            Weight Min = 0;
+            Weight Max = 255;
+        }
+    }
+}

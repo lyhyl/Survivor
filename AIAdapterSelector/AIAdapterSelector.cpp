@@ -3,6 +3,8 @@
 #include "AIAdapterSelector.h"
 #include "Wrapper.h"
 
+using namespace std;
+
 void *CreateAIAdapter(const wchar_t* file)
 {
 	wstring fileName(file);
@@ -17,5 +19,5 @@ void *CreateAIAdapter(const wchar_t* file)
 
 	}
 	// Unsupport
-	return 0;
+	return nullptr;
 }

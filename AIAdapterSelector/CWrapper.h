@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include "SAIAdapter.h"
 
+using namespace std;
 using namespace SurvivorLibrary;
 
 class CImplWrapper :SAIAdapter
@@ -23,7 +24,8 @@ public:
 		else
 		{
 			DWORD e = GetLastError();
-			TCHAR msg[50] = L"";
+			wchar_t msg[512] = L"";
+			swprintf_s(msg, L"Error %lu\nInvail AI : %s", e, file.c_str());
 			MessageBox(0, msg, L"Error", 0);
 		}
 	}

@@ -3,16 +3,13 @@
 #include <memory>
 #include <cmath>
 #include "SDefines.h"
-using namespace std;
 
 namespace SurvivorLibrary
 {
-	struct API SPoint
+	struct API SVector2
 	{
 		sfloat x, y;
 	};
-
-	typedef SPoint SVector2;
 
 	inline sfloat SDot(SVector2 a, SVector2 b){ return a.x*b.x + a.y*b.y; }
 	inline sfloat SCross(SVector2 a, SVector2 b){ return a.x*b.y - a.y*b.x; }
@@ -39,7 +36,7 @@ namespace SurvivorLibrary
 
 	struct API STriangle
 	{
-		SPoint a, b, c;
+		SVector2 a, b, c;
 	};
 
 	struct API SRegion
@@ -50,29 +47,29 @@ namespace SurvivorLibrary
 			vertexCount = 0;
 			verties = nullptr;
 		}
-		SRegion(initializer_list<SPoint> vs) :SRegion(vs.begin(), vs.size())
+		SRegion(std::initializer_list<SVector2> vs) :SRegion(vs.begin(), vs.size())
 		{
 		}
-		SRegion(const SPoint *vs, ssize size)
+		SRegion(const SVector2 *vs, ssize size)
 		{
 			vertexCount = size;
-			rsize_t memsiz = (rsize_t)vertexCount * sizeof(SPoint);
-			verties = new SPoint[(size_t)vertexCount];
+			rsize_t memsiz = (rsize_t)vertexCount * sizeof(SVector2);
+			verties = new SVector2[(size_t)vertexCount];
 			memcpy_s(verties, memsiz, vs, memsiz);
 		}
 		SRegion& operator=(SRegion &r)
 		{
 			vertexCount = r.vertexCount;
-			rsize_t memsiz = (rsize_t)vertexCount * sizeof(SPoint);
-			verties = new SPoint[(size_t)vertexCount];
+			rsize_t memsiz = (rsize_t)vertexCount * sizeof(SVector2);
+			verties = new SVector2[(size_t)vertexCount];
 			memcpy_s(verties, memsiz, r.verties, memsiz);
 			return *this;
 		}
 		SRegion& operator=(SRegion &&r)
 		{
 			vertexCount = r.vertexCount;
-			rsize_t memsiz = (rsize_t)vertexCount * sizeof(SPoint);
-			verties = new SPoint[(size_t)vertexCount];
+			rsize_t memsiz = (rsize_t)vertexCount * sizeof(SVector2);
+			verties = new SVector2[(size_t)vertexCount];
 			memcpy_s(verties, memsiz, r.verties, memsiz);
 			return *this;
 		}
@@ -82,19 +79,19 @@ namespace SurvivorLibrary
 				delete[] verties;
 		}
 		bool Empty()const{ return vertexCount == 0; }
-		bool Contain(SPoint p)const
+		bool Contain(SVector2 p)const
 		{
 			//TODO
 			return false;
 		}
 	private:
 		ssize vertexCount = 0;
-		SPoint *verties = nullptr;
+		SVector2 *verties = nullptr;
 
 		ssize triangleCount = 0;
 		STriangle *triangles = nullptr;
 
-		void DelaunayTriangulation(SPoint *verties, ssize count)
+		void DelaunayTriangulation(SVector2 *verties, ssize count)
 		{
 			//TODO
 		}

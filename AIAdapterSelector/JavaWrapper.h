@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include "SAIAdapter.h"
 
+using namespace std;
 using namespace SurvivorLibrary;
 
 static char JavaVMOptionBuffer[MAX_PATH + 100] = "-Djava.class.path=.;";

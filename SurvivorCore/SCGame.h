@@ -29,7 +29,6 @@ public:
 class Competitor
 {
 private:
-	static int HeroID;
 	class SCGame *game;
 	SAIAdapter *ai;
 	sfloat fairRatio;
@@ -72,17 +71,22 @@ private:
 	HMODULE uiSelectorDll;
 	wstring uiOption;
 	SUIAdapter *uiAdapter = nullptr;
-	int uiState = 1;
+	int uiState = (int)SGState::OK;
 
 	HMODULE aiSelectorDll;
 	vector<Competitor*> Competitors;
+
+	SMap *map = nullptr;
 	vector<SHero*> Heroes;
+	vector<SStillObject*> StillObjects;
+
+	vector<SHero*> UpdatedHeroes;
+	vector<SStillObject*> UpdatedStillObjects;
+	vector<SAnimal*> UpdatedAnimals;
 
 	mutex writeMtx;
 	hash_map<SHero*, SHeroAction> actionLog;
 	hash_map<SHero*, SHeroAction> actionLogApplying;
-
-	SMap *Map = nullptr;
 
 	bool running = true;
 };

@@ -6,6 +6,7 @@
 #include "UIAdapterSelector.h"
 #include "UIAdapterWrapper.h"
 
+using namespace std;
 using namespace System;
 using namespace System::IO;
 using namespace System::Reflection;
@@ -33,8 +34,9 @@ void InitializeCSharp(String ^assName)
 	String ^assPath = Path::Combine(UIRootPath, assName + ".dll");
 	CSharpAssembly = Assembly::LoadFile(assPath);
 	Object ^instance = CSharpAssembly->CreateInstance(csClassName);
-	MethodInfo ^method = CSharpAssembly->GetType(csClassName)->GetMethod("Display");
-	_CSharpImpl = new CSharpImplWrapper(instance, method);
+	MethodInfo ^initMethod = CSharpAssembly->GetType(csClassName)->GetMethod("Initialize");
+	MethodInfo ^updateMethod = CSharpAssembly->GetType(csClassName)->GetMethod("Update");
+	_CSharpImpl = new CSharpImplWrapper(instance, initMethod, updateMethod);
 	Initialized = true;
 }
 

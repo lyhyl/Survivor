@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CLRSurvivorLibrary;
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -22,13 +23,20 @@ namespace XNAUI3DImpl
             formThread.Start();
         }
 
-        public int Display(IntPtr pdata)
+        public int Initialize(IntPtr pinitd)
+        {
+            while (survivorGame == null)
+                Thread.Yield();
+            return survivorGame.InitializeSurvivor(new CSInitializeData(pinitd));
+        }
+
+        public int Update(IntPtr pupdd)
         {
             if (threadExited)
-                return 0;
+                return (int)CSGState.UIExited;
             if (survivorGame != null)
-                return survivorGame.Display(pdata);
-            return 1;
+                return survivorGame.UpdateSurvivor(new CSUpdateData(pupdd));
+            return (int)CSGState.OK;
         }
 
         private void FormThreadExited()

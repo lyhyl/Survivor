@@ -5,12 +5,16 @@ using namespace std;
 
 namespace SurvivorLibrary
 {
-	sint SMap::ResID = 0;
+	/*RDTSC*/
+	inline unsigned __int64 GetCycleCount()
+	{
+		__asm _emit 0x0F
+		__asm _emit 0x31
+	}
 
 	SMap::SMap(ssize w, ssize h) :width(w), height(h)
 	{
-		default_random_engine random;
-		seed = random();
+		seed = (unsigned)(GetCycleCount() & 0xffffffff);
 		GenerateRandomMap();
 	}
 
@@ -19,7 +23,7 @@ namespace SurvivorLibrary
 		GenerateRandomMap();
 	}
 
-	SMap::SMap(istream &in)
+	SMap::SMap(std::istream &in)
 	{
 		ReadinFile(in);
 	}
@@ -28,12 +32,12 @@ namespace SurvivorLibrary
 	{
 	}
 
-	ostream &SMap::operator<<(ostream &out)
+	ostream &SMap::operator<<(std::ostream &out)
 	{
 		return out;
 	}
 
-	istream &SMap::operator>>(istream &in)
+	istream &SMap::operator>>(std::istream &in)
 	{
 		Clear();
 		ReadinFile(in);
@@ -45,7 +49,7 @@ namespace SurvivorLibrary
 
 	}
 
-	void SMap::ReadinFile(istream &in)
+	void SMap::ReadinFile(std::istream &in)
 	{
 		in >> seed >> width >> height;
 	}
@@ -59,7 +63,10 @@ namespace SurvivorLibrary
 		auto count = getCount(random);
 		while (count--)
 		{
-			SRegion region{ { getPositionX(random), getPositionY(random) } };
+			SStillObject *so = new SStillObject;
+			so->position = { getPositionX(random), getPositionY(random) };
+			so->type = SStillObjectType::Tree;
+			stillObjects.emplace_back(move(so));
 		}
 	}
 }

@@ -16,4 +16,14 @@ namespace SurvivorLibrary
 
 	API const char * GetHeroesDirA();
 	API const wchar_t * GetHeroesDirW();
+
+	API enum class SGState :int
+	{
+		OK,
+		UnknowError,
+		AIError = 0x10000000,
+		UIError = 0x20000000,
+		UITooManyUpdateData,
+		UIExited
+	};
 }

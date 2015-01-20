@@ -24,6 +24,18 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CLRSMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CLRSObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CLRSCommunication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CLRSMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">

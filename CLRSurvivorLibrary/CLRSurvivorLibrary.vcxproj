@@ -147,6 +147,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CLRSCommunication.h" />
+    <ClInclude Include="CLRSMap.h" />
+    <ClInclude Include="CLRSMath.h" />
+    <ClInclude Include="CLRSObject.h" />
     <ClInclude Include="CLRSurvivorLibrary.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
