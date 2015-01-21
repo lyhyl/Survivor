@@ -21,6 +21,9 @@
     <ClInclude Include="SCGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LuaCall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SurvivorCore.cpp">

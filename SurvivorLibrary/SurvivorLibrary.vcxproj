@@ -166,6 +166,7 @@
     <ClCompile Include="SDefines.cpp" />
     <ClCompile Include="SMap.cpp" />
     <ClCompile Include="SObject.cpp" />
+    <ClCompile Include="SUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SAIAdapter.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="SMath.h" />
     <ClInclude Include="SObject.h" />
     <ClInclude Include="SUIAdapter.h" />
+    <ClInclude Include="SUtility.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SurvivorLibrary.rc" />

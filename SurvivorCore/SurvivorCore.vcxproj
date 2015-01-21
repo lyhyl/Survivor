@@ -70,28 +70,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(PlatformTarget)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(PlatformTarget)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(PlatformTarget)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)$(PlatformTarget)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,7 +110,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -135,7 +135,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,7 +157,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -183,10 +183,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="LuaCall.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SCGame.h" />
   </ItemGroup>

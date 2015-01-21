@@ -25,7 +25,7 @@ namespace CLRSurvivorLibrary
 		static cliext::vector<T^>^ Vector(const std::vector<U*> &v)
 		{
 			cliext::vector<T^>^ cv = gcnew vector<T^>();
-			cv->reserve(v.size());
+			cv->reserve(static_cast<cliext::vector<T^>::size_type>(v.size()));
 			for each (U *u in v)
 				cv->push_back(gcnew T(u));
 			return cv;

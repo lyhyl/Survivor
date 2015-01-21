@@ -181,6 +181,7 @@ namespace XNAUI3DImpl
 
         protected override void Update(GameTime gameTime)
         {
+            audioEngine.Update();
             keyboard.Update(gameTime);
             mouse.Update(gameTime);
             camera.Update(gameTime);

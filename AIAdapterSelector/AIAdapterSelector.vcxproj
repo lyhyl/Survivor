@@ -73,28 +73,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\include\win32;C:\Program Files %28x86%29\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\include\win32;C:\Program Files %28x86%29\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_25\include\win32;C:\Program Files\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\Java\jdk1.8.0_25\include\win32;C:\Program Files\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\Program Files\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\include\win32;C:\Program Files %28x86%29\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\include\win32;C:\Program Files %28x86%29\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\Program Files %28x86%29\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_25\include\win32;C:\Program Files\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\Java\jdk1.8.0_25\include\win32;C:\Program Files\Java\jdk1.8.0_25\include;D:\Develop\Survivor\SurvivorLibrary;D:\Develop\Survivor\Lua\src;$(IncludePath)</IncludePath>
     <ExecutablePath>C:\Program Files\Java\jdk1.8.0_25\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -106,7 +106,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <NoEntryPoint>true</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
@@ -119,7 +119,7 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <NoEntryPoint>true</NoEntryPoint>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
@@ -135,7 +135,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <NoEntryPoint>true</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
@@ -146,7 +146,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(PlatformTarget)\$(Configuration)\SurvivorLibrary.lib;$(SolutionDir)$(PlatformTarget)\$(Configuration)\Lua.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <NoEntryPoint>true</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>

@@ -1,5 +1,12 @@
+#include <lua.hpp>
+#include <lualib.h>
+#include <lauxlib.h>
+
+#include <fstream>
 #include <chrono>
-#include <future>
+#include <SUtility.h>
+
+#include "LuaCall.h"
 #include "SCGame.h"
 
 using namespace std;
@@ -54,6 +61,23 @@ SHero* Competitor::CreateHero()
 	return hero;
 }
 
+size_t LubSz = 0;
+int LubWriter(lua_State *L, const void *p, size_t sz, void *ud)
+{
+	memcpy_s((char*)ud + LubSz, 512, p, sz);
+	LubSz += sz;
+	return 0;
+}
+
+int cpp(lua_State *L)
+{
+	auto v = lua_tonumber(L, -1);
+	lua_pop(L, 1);
+	v += 1;
+	lua_pushnumber(L, v);
+	return 1;
+}
+
 SCGame::SCGame()
 {
 	uiSelectorDll = LoadLibrary(L".\\UIAdapterSelector.dll");
@@ -61,6 +85,29 @@ SCGame::SCGame()
 	getUIAdapter = (GetUIAdapterFunc)GetProcAddress(uiSelectorDll, "CreateUIAdapter");
 	aiSelectorDll = LoadLibrary(L".\\AIAdapterSelector.dll");
 	getAIAdapter = (GetAIAdapterFunc)GetProcAddress(aiSelectorDll, "CreateAIAdapter");
+
+	lua_State *L = luaL_newstate();
+	luaL_openlibs(L);
+	lua_register(L, "cpp", cpp);
+
+	char LubBuffer[512];
+	ifstream ff("D:\\a86.lub", ios::binary);
+	ff.seekg(0, ff.end);
+	auto flen = ff.tellg();
+	ff.seekg(0, ff.beg);
+	ff.read(LubBuffer, flen);
+	ff.close();
+
+	LuaCall<double, int> runFunc(L, LubBuffer, (int)flen, 1);
+
+	int c;
+	runFunc(1, 2);
+	runFunc.get<int>(c);
+	float d;
+	runFunc(3.5, 4);
+	runFunc.get<float>(d);
+
+	lua_close(L);
 }
 
 SCGame::~SCGame()
@@ -79,7 +126,7 @@ void SCGame::BeginGame(istream &in)
 void SCGame::BeginGame()
 {
 	// TODO
-	int count;
+	ssize count;
 	auto options = enumUIAdpaters(&count);
 	BeginGame(wstring(options[count - 1]));
 	delete options;
@@ -91,26 +138,9 @@ void SCGame::BeginGame(wstring &UIOption)
 	uiAdapter = getUIAdapter(uiOption.c_str());
 
 	wstring aiFolder = GetExePath() + L"\\" + GetHeroesDirW() + L"\\";
-	if (CreateDirectory(aiFolder.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
-	{
-		WIN32_FIND_DATA fd;
-		HANDLE hFind = FindFirstFile((aiFolder + L"*.*").c_str(), &fd);
-		if (hFind != INVALID_HANDLE_VALUE)
-		{
-			do
-				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-				{
-					auto fullName = aiFolder + fd.cFileName;
-					Competitors.emplace_back(new Competitor(this, getAIAdapter(fullName.c_str()), 0));
-				}
-			while (FindNextFile(hFind, &fd));
-			FindClose(hFind);
-		}
-	}
-	else
-	{
-		// Wait for AIs
-	}
+	SurvivorLibrary::SearchHandleFiles(aiFolder.c_str(), (aiFolder + L"*.*").c_str(), [&](wchar_t name[]) {
+		Competitors.emplace_back(new Competitor(this, getAIAdapter((aiFolder + name).c_str()), 0));
+	});
 
 	SObject::ResetIDCounter();
 

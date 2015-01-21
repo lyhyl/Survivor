@@ -1,20 +1,14 @@
 #include <random>
 #include "SMap.h"
+#include <intrin.h>
 
 using namespace std;
 
 namespace SurvivorLibrary
 {
-	/*RDTSC*/
-	inline unsigned __int64 GetCycleCount()
-	{
-		__asm _emit 0x0F
-		__asm _emit 0x31
-	}
-
 	SMap::SMap(ssize w, ssize h) :width(w), height(h)
 	{
-		seed = (unsigned)(GetCycleCount() & 0xffffffff);
+		seed = (unsigned)(__rdtsc() & 0xffffffff);
 		GenerateRandomMap();
 	}
 
